@@ -5,9 +5,7 @@ Source code for the Programming Microsoft Azure Service Fabric book
 
 ### Chapter 1
 
-* [HelloWorldApplication](./Chapter-1/HelloWorldApplication)
-
-    The Hello, World! application of Service Fabric.
+* [**HelloWorldApplication**](./Chapter-1/HelloWorldApplication) The Hello, World! application of Service Fabric.
 
 ## Version 1 Source Code
 
