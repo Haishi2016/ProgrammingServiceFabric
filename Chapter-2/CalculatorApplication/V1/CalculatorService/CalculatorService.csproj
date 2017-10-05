@@ -100,7 +100,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CalculatorService.Interfaces\CalculatorService.Interfaces.csproj">
+    <ProjectReference Include="..\CalculatorService.Interfaces\CalculatorService.Interfaces.csproj">
       <Project>{9983a045-9c49-47d4-b5c4-4acdd62abd30}</Project>
       <Name>CalculatorService.Interfaces</Name>
     </ProjectReference>
