@@ -110,9 +110,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ServiceRemotingJsonSerializationProvider.cs" />
     <Compile Include="ICalculatorService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceRemotingJsonSerializationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

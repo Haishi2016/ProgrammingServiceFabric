@@ -1,15 +1,10 @@
-﻿using System;
+﻿using CalculatorService.Interfaces;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-using CalculatorService.Interfaces;
-using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-using Microsoft.ServiceFabric.Services.Remoting;
-using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
 
 namespace CalculatorService
 {
@@ -31,7 +26,6 @@ namespace CalculatorService
                         new ServiceRemotingJsonSerializationProvider());
                     })
             };
-
         }
         public Task<long> Add(int a, int b)
         {
