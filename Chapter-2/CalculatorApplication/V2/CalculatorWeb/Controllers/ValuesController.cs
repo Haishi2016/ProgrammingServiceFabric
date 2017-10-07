@@ -25,7 +25,7 @@ namespace CalculatorWeb.Controllers
         });
 
         [HttpGet]
-        public long Add(int a, int b)
+        public string Add(int a, int b)
         {
             var calculatorClient = proxyFactory.CreateServiceProxy<ICalculatorService>(
                 new Uri("fabric:/CalculatorApplication/CalculatorService"),
@@ -34,7 +34,7 @@ namespace CalculatorWeb.Controllers
         }
         
         [HttpGet]
-        public long Subtract(int a, int b)
+        public string Subtract(int a, int b)
         {
             var calculatorClient = proxyFactory.CreateServiceProxy<ICalculatorService>(
              new Uri("fabric:/CalculatorApplication/CalculatorService"),
