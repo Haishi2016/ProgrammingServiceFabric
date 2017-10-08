@@ -6,6 +6,7 @@ using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Collections.Generic;
 using System.Fabric;
+using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace CalculatorService
@@ -20,6 +21,8 @@ namespace CalculatorService
         { }
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
+            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
+
             return new[]
             {
                 new ServiceInstanceListener((context) =>
@@ -27,7 +30,7 @@ namespace CalculatorService
                         wcfServiceObject: this,
                         serviceContext: context,
                         endpointResourceName: "ServiceEndpoint",
-                        listenerBinding: WcfUtility.CreateTcpListenerBinding()
+                        listenerBinding: binding
                    ))
             };
         }
