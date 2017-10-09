@@ -1,0 +1,17 @@
+syntax = "proto3";
+package Calculator;
+
+service Calculator {
+	rpc Add(CalculateRequest) returns (CalculateReply) {}
+	rpc Subtract(CalculateRequest) returns (CalculateReply) {}
+}
+
+message CalculateRequest {
+	int32 a = 1;
+	int32 b = 2;
+}
+
+message CalculateReply {
+	string replicaId = 1;
+	int32 result = 2;
+}
