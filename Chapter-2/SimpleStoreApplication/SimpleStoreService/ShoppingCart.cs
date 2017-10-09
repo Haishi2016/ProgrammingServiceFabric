@@ -7,24 +7,41 @@ namespace SimpleStoreService
 {
     public class ShoppingCart
     {
-        public List<ShoppingCartItem> Items { get; private set; }
+        private List<ShoppingCartItem> mItems;
+        public IEnumerable<ShoppingCartItem> GetItems()
+        {
+            return mItems.AsEnumerable<ShoppingCartItem>();
+        }
         public ShoppingCart()
         {
-            Items = new List<ShoppingCartItem>();
+            mItems = new List<ShoppingCartItem>();
+        }
+        public ShoppingCart(ShoppingCartItem item):this()
+        {
+            this.AddItem(item);
         }
         public double Total
         {
             get
             {
-                return Items.Sum(i => i.Amount);
+                return mItems.Sum(i => i.LineTotal);
             }
         }
-        public void AddItem(ShoppingCartItem newItem)
+        public ShoppingCart AddItem(ShoppingCartItem newItem)
         {
-            var existingItem = Items.FirstOrDefault(i => i.ProductName == newItem.ProductName);
+            var existingItem = mItems.FirstOrDefault(i => i.ProductName == newItem.ProductName);
             if (existingItem != null)
-                Items.Remove(existingItem);
-            Items.Add(newItem);
+                existingItem.Quantity += newItem.Quantity;
+            else 
+                mItems.Add(newItem);
+            return this;
+        }
+        public ShoppingCart RemoveItem(string productName)
+        {
+            var existingItem = mItems.FirstOrDefault(i => i.ProductName == productName);
+            if (existingItem != null)
+                mItems.Remove(existingItem);
+            return this;
         }
     }
 }
