@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Data.Collections;
+using System.Threading.Tasks;
 
 namespace SimpleStoreService.Controllers
 {
@@ -17,7 +14,7 @@ namespace SimpleStoreService.Controllers
         {
             this.mStateManager = stateManager;
         }
-        // GET api/values
+        
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -35,20 +32,28 @@ namespace SimpleStoreService.Controllers
             }            
         }
         
-        // POST api/values
         [HttpPost]
         public async void Post([FromBody]ShoppingCartItem item)
         {
             await addToCart(item);
         }
 
-        // PUT api/values/5
         [HttpPut]
         public async void Put([FromBody]ShoppingCartItem item)
         {
             await addToCart(item);  
         }
-        // DELETE api/values/5
+
+        private async Task addToCart(ShoppingCartItem item)
+        {
+            var myDictionary = await mStateManager.GetOrAddAsync<IReliableDictionary<string, ShoppingCart>>(Shoppingcart);
+            using (var tx = mStateManager.CreateTransaction())
+            {
+                await myDictionary.AddOrUpdateAsync(tx, getUserIdentity(), new ShoppingCart(item), (k, v) => v.AddItem(item));
+                await tx.CommitAsync();
+            }
+        }
+
         [HttpDelete("{name}")]
         public async Task<IActionResult> Delete(string name)
         {
@@ -66,15 +71,7 @@ namespace SimpleStoreService.Controllers
                     return new NotFoundResult();
             }
         }
-        private async Task addToCart(ShoppingCartItem item)
-        {
-            var myDictionary = await mStateManager.GetOrAddAsync<IReliableDictionary<string, ShoppingCart>>(Shoppingcart);            
-            using (var tx = mStateManager.CreateTransaction())
-            {
-                await myDictionary.AddOrUpdateAsync(tx, getUserIdentity(), new ShoppingCart(item), (k, v) => v.AddItem(item));
-                await tx.CommitAsync();
-            }
-        }
+        
         private string getUserIdentity()
         {             
             if (HttpContext.User != null
