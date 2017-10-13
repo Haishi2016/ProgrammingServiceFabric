@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Simple Store";
+}
+<div ng-app="SimpleStore">
+    <div ng-controller="SimpleStoreController" ng-init="refresh()">
+        <div class="row">
+            <div ng-model="cart">
+                {{total}}
+                <div ng-repeat="item in cart.items">
+                    {{item.productName}}
+                    {{item.unitPrice}}
+                    {{item.quantity}}
+                    {{item.lineTotal}}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div ng-model="catalog">
+                <div ng-repeat="item in catalog.items">
+                    {{item.productName}}
+                    {{item.unitPrice}}
+                    {{item.imageUrl}}
+                    <input type="text" value="{{item.quantity}}" />
+                    <button ng-click="addToCart(item)">Add</button>
+                    <button ng-click="removeFromCart(item)">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
