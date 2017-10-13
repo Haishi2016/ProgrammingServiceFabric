@@ -18,8 +18,9 @@ namespace CalculatorClient
         {
             
             IServicePartitionResolver partitionResolver = new ServicePartitionResolver("sfv2.eastus.cloudapp.azure.com:19000");
-            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
-
+            //BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
+            var binding = WcfUtility.CreateTcpClientBinding();
+            
 
             var resolveResults = partitionResolver.ResolveAsync(new Uri("fabric:/CalculatorApplication/CalculatorService"),
                     ServicePartitionKey.Singleton,
@@ -28,6 +29,7 @@ namespace CalculatorClient
             var endpoint = resolveResults.GetEndpoint();
             var endpointObject = JsonConvert.DeserializeObject<JObject>(endpoint.Address);
             var addressString = ((JObject)endpointObject.Property("Endpoints").Value)[""].Value<string>();
+            addressString = addressString.Replace("10.0.0.6", "sfv2.eastus.cloudapp.azure.com");
             var endpointAddress = new EndpointAddress(addressString);
             var channel = ChannelFactory<ICalculatorService>.CreateChannel(binding, endpointAddress);
   

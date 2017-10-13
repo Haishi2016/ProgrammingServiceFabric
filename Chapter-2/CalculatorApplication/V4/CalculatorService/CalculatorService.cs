@@ -20,9 +20,7 @@ namespace CalculatorService
             : base(context)
         { }
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
-        {
-            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
-
+        {            
             return new[]
             {
                 new ServiceInstanceListener((context) =>
@@ -30,7 +28,7 @@ namespace CalculatorService
                         wcfServiceObject: this,
                         serviceContext: context,
                         endpointResourceName: "ServiceEndpoint",
-                        listenerBinding: binding
+                        listenerBinding: WcfUtility.CreateTcpListenerBinding()
                    ))
             };
         }

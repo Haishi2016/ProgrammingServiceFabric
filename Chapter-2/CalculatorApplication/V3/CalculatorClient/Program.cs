@@ -16,7 +16,7 @@ namespace CalculatorClient
         {
             
             IServicePartitionResolver partitionResolver = new ServicePartitionResolver("localhost:19000");
-            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
+            var binding = WcfUtility.CreateTcpClientBinding();
 
          
               var wcfClientFactory = new WcfCommunicationClientFactory<ICalculatorService>
@@ -33,23 +33,5 @@ namespace CalculatorClient
                 Console.WriteLine(result);
             }
         }
-    }
-    class SampleServiceClient : System.ServiceModel.ClientBase<ICalculatorService>, ICalculatorService
-    {
-        public SampleServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress)
-       :
-           base(binding, remoteAddress)
-        {
-        }
-
-        public Task<string> Add(int a, int b)
-        {
-            return base.Channel.Add(a,b);
-        }
-
-        public Task<string> Subtract(int a, int b)
-        {
-            return base.Channel.Subtract(a, b);
-        }
-    }
+    }   
 }
