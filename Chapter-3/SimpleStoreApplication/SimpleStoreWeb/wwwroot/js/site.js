@@ -4,16 +4,34 @@ app.run(function () { });
 var catalog = {
     items: [
         {
-            productName: "XBOX",
-            unitPrice: 499.9,
+            productName: "Xbox One X",
+            unitPrice: 499.99,
             quantity: 0,
-            imageUrl: ""
+            imageUrl: "images/xbox-x.png"
         },
         {
-            productName: "PlayStation",
-            unitPrice: 499.9,
+            productName: "Xbox One S",
+            unitPrice: 349.00,
             quantity: 0,
-            imageUrl: ""
+            imageUrl: "images/xbox-s.png"
+        },
+        {
+            productName: "Xbox Wireless Controller",
+            unitPrice: 74.99,
+            quantity: 0,
+            imageUrl: "images/xbox-joy.png"
+        },
+        {
+            productName: "Kinect for Xbox One",
+            unitPrice: 74.99,
+            quantity: 0,
+            imageUrl: "images/xbox-kinect.png"
+        },
+        {
+            productName: "Xbox Stereo Headset",
+            unitPrice: 74.99,
+            quantity: 0,
+            imageUrl: "images/xbox-head.png"
         }
     ]
 };
@@ -28,12 +46,6 @@ app.controller('SimpleStoreController', ['$scope', '$http', function ($scope, $h
                 $scope.cart = undefined;
             });
     }
-    $http.add = function (item) {
-        $http.put('api/Carts', item)
-            .then(function (res, status) {
-                $scope.refresh();
-            });
-    };
     $http.remove = function (name) {
         $http.delete('api/Carts/' + name)
             .then(function (res, status) {
@@ -43,14 +55,14 @@ app.controller('SimpleStoreController', ['$scope', '$http', function ($scope, $h
     $http.update = function (item) {
         $http.post('api/Carts', item)
             .then(function (res, status) {
+                item.quantity = 0;
                 $scope.refresh();
             });
     };
     $scope.addToCart = function (item){
-        alert(item.quantity);
+        $http.update(item);
     }
-    $scope.removeFromCart = function (item){
-        alert(item.quantity);
+    $scope.removeFromCart = function (item) {
+        $http.remove(item.productName);
     }
-    
 }]);

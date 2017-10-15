@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.ServiceFabric.Services.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Text;
+using Microsoft.Net.Http.Headers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,39 +19,55 @@ namespace SimpleStoreWeb.Controllers
     [Route("api/[controller]")]
     public class CartsController : Controller
     {
-        // GET: api/values
-        [HttpGet]
-        public ShoppingCart Get()
+        private static Regex ipRex = new Regex(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+        private readonly HttpClient httpClient;
+        public CartsController(HttpClient httpClient)
         {
-            var cart = new ShoppingCart();
-            cart.Items.Add(new ShoppingCartItem { ProductName = "XBOX", Quantity = 1, UnitPrice = 499.99, LineTotal = 499.99});
-            cart.Total = 499.99;
-            return cart;
+            this.httpClient = httpClient;
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+
+        // GET: api/values
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            return "value";
+            HttpResponseMessage response = await this.httpClient.GetAsync(await ResolveAddress() + "/api/ShoppingCarts");
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return this.StatusCode((int)response.StatusCode);
+            var cart = JsonConvert.DeserializeObject<ShoppingCart>(await response.Content.ReadAsStringAsync());
+            return Json(cart);
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult> Post([FromBody]ShoppingCartItem item)
         {
+            StringContent postContent = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+            postContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = await this.httpClient.PostAsync(await ResolveAddress() + "/api/ShoppingCarts", postContent);
+            return new OkResult();
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{productName}")]
+        public async Task<IActionResult> Delete(string productName)
         {
+            HttpResponseMessage response = await this.httpClient.DeleteAsync(await ResolveAddress() + "/api/ShoppingCarts/" + productName);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return this.StatusCode((int)response.StatusCode);
+            return new OkResult();
+        }
+        private async Task<string> ResolveAddress()
+        {
+            var partitionResolver = ServicePartitionResolver.GetDefault();
+            var resolveResults = await partitionResolver.ResolveAsync(new Uri("fabric:/SimpleStoreApplication/SimpleStoreService"),
+                    new ServicePartitionKey(1), new System.Threading.CancellationToken());
+
+            var endpoint = resolveResults.GetEndpoint();
+            var endpointObject = JsonConvert.DeserializeObject<JObject>(endpoint.Address);
+            var addressString = ((JObject)endpointObject.Property("Endpoints").Value)[""].Value<string>();
+            return addressString;
         }
     }
 }

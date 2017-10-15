@@ -38,12 +38,6 @@ namespace SimpleStoreService.Controllers
             await addToCart(item);
         }
 
-        [HttpPut]
-        public async void Put([FromBody]ShoppingCartItem item)
-        {
-            await addToCart(item);  
-        }
-
         private async Task addToCart(ShoppingCartItem item)
         {
             var myDictionary = await mStateManager.GetOrAddAsync<IReliableDictionary<string, ShoppingCart>>(Shoppingcart);

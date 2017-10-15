@@ -1,30 +1,40 @@
 ﻿@{
     ViewData["Title"] = "Simple Store";
 }
+<div clas="row">
+    <h1>Simple Store</h1>
+    <hr />
+</div>
 <div ng-app="SimpleStore">
     <div ng-controller="SimpleStoreController" ng-init="refresh()">
         <div class="row">
-            <div ng-model="cart">
-                {{total}}
-                <div ng-repeat="item in cart.items">
-                    {{item.productName}}
-                    {{item.unitPrice}}
-                    {{item.quantity}}
-                    {{item.lineTotal}}
-                </div>
+            <div class="col-sm-2"><img src="images/cart.png" /></div>
+            <div ng-model="cart" class="col-sm-10">
+                <table>
+                    <thead><tr><td>Product</td><td>Price</td><td>Quantity</td><td>Line Total</td></tr></thead>
+                    <tr ng-repeat="item in cart.items">
+                        <td>{{item.productName}}</td>
+                        <td>{{item.unitPrice | number:2}}</td>
+                        <td>{{item.quantity}}</td>
+                        <td>${{item.lineTotal | number:2}}</td>
+                    </tr>
+                    <tfoot><tr><td colspan=4><b>Total: </b>${{cart.total | number:2}}</td></tr></tfoot>
+                </table>
             </div>
         </div>
+        <div class="row"><hr /></div>
         <div class="row">
             <div ng-model="catalog">
-                <div ng-repeat="item in catalog.items">
-                    {{item.productName}}
-                    {{item.unitPrice}}
-                    {{item.imageUrl}}
-                    <input type="text" value="{{item.quantity}}" />
-                    <button ng-click="addToCart(item)">Add</button>
-                    <button ng-click="removeFromCart(item)">Remove</button>
+                <div class="col-sm-2" ng-repeat="item in catalog.items">
+                    <img ng-src="{{item.imageUrl}}"
+                         alt="{{item.productName}}" />
+                    {{item.productName}}<br />
+                    ${{item.unitPrice | number:2}}
+                    <input type="text" ng-model="item.quantity" class="form-control" /><br />
+                    <button ng-click="addToCart(item)" class="btn btn-success">Add Item</button>
+                    <button ng-click="removeFromCart(item)" class="btn btn-danger">Remove</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</div>    

@@ -35,3 +35,37 @@ textarea {
         display: none;
     }
 }
+
+table, th, td {
+    border: 1px solid grey;
+    border-collapse: collapse;
+    padding: 5px;
+}
+
+thead tr td {
+    background-color: #399d20;
+    font-weight: bold;
+    color: white;
+}
+
+.money {
+    text-align: right;
+}
+
+tfoot tr td {
+    background-color: #399d20;
+    color: white;
+    text-align: right;
+}
+
+table tr td {
+    text-align: right;
+}
+
+table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+
+table tr:nth-child(even) {
+    background-color: #ffffff;
+}
