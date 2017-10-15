@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CalculatorClient 
@@ -16,9 +17,10 @@ namespace CalculatorClient
     {
         static void Main(string[] args)
         {
-            
-            IServicePartitionResolver partitionResolver = new ServicePartitionResolver("sfv2.eastus.cloudapp.azure.com:19000");
-            //BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
+            string hostName = "sfv2.eastus.cloudapp.azure.com";
+
+            Regex ipRex = new Regex(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+            IServicePartitionResolver partitionResolver = new ServicePartitionResolver(hostName + ":19000");
             var binding = WcfUtility.CreateTcpClientBinding();
             
 
@@ -29,7 +31,7 @@ namespace CalculatorClient
             var endpoint = resolveResults.GetEndpoint();
             var endpointObject = JsonConvert.DeserializeObject<JObject>(endpoint.Address);
             var addressString = ((JObject)endpointObject.Property("Endpoints").Value)[""].Value<string>();
-            addressString = addressString.Replace("10.0.0.6", "sfv2.eastus.cloudapp.azure.com");
+            addressString = ipRex.Replace(addressString, hostName, 1);
             var endpointAddress = new EndpointAddress(addressString);
             var channel = ChannelFactory<ICalculatorService>.CreateChannel(binding, endpointAddress);
   
