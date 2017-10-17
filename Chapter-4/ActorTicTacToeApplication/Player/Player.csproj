@@ -98,6 +98,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Game.Interfaces\Game.Interfaces.csproj">
+      <Project>{ff8569b0-bccc-4fe4-99a4-d0ac84e4881e}</Project>
+      <Name>Game.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Player.Interfaces\Player.Interfaces.csproj">
       <Project>{960C5A39-1236-4C9C-930F-335523B2A87B}</Project>
       <Name>Player.Interfaces</Name>

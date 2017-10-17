@@ -7,6 +7,7 @@ using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Actors.Client;
 using Game.Interfaces;
+using System.ComponentModel;
 
 namespace Game
 {
@@ -21,6 +22,7 @@ namespace Game
     [StatePersistence(StatePersistence.Persisted)]
     internal class Game : Actor, IGame
     {
+        private const string GameStateKey = "GameState";
         /// <summary>
         /// Initializes a new instance of Game
         /// </summary>
@@ -31,41 +33,90 @@ namespace Game
         {
         }
 
+        public async Task<bool> AcceptPlayerMoveAsync(long playerId, int x, int y)
+        {
+            var state = await this.StateManager.GetStateAsync<GameState>(GameStateKey);
+
+            if (x < 0 || x > 2 || y < 0 || y > 2
+                || state.Players.Count != 2
+                || state.NumberOfMoves >= 9
+                || state.Winner != "")
+                return false;
+            int index = state.Players.FindIndex(p => p.Item1 == playerId);
+            if (index == state.NextPlayerIndex)
+            {
+                if (state.Board[y * 3 + x] == 0)
+                {
+                    int piece = index * 2 - 1;
+                    state.Board[y * 3 + x] = piece;
+                    state.NumberOfMoves++;
+
+                    if (HasWon(state.Board, piece * 3))
+                        state.Winner = state.Players[index].Item2 + " (" + (piece == -1 ? "X" : "O") + ")";
+                    else if (state.Winner == "" && state.NumberOfMoves >= 9)
+                        state.Winner = "TIE";
+                    state.NextPlayerIndex = (state.NextPlayerIndex + 1) % 2;
+                    await this.StateManager.SetStateAsync(GameStateKey, state);
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
+
+        private bool HasWon(int[] board, int sum)
+        {
+            return board[0] + board[1] + board[2] == sum
+                    || board[3] + board[4] + board[5] == sum
+                    || board[6] + board[7] + board[8] == sum
+                    || board[0] + board[3] + board[6] == sum
+                    || board[1] + board[4] + board[7] == sum
+                    || board[2] + board[5] + board[8] == sum
+                    || board[0] + board[4] + board[8] == sum
+                    || board[2] + board[4] + board[6] == sum;
+        }
+        public async Task<bool> AcceptPlayerToGameAsync(long playerId, string playerName)
+        {
+            var state = await this.StateManager.GetStateAsync<GameState>(GameStateKey);
+            if (state.Players.Count >= 2
+                || state.Players.FirstOrDefault(p => p.Item2 == playerName) != null)
+                return false;
+            state.Players.Add(new Tuple<long, string>(playerId, playerName));
+            await this.StateManager.SetStateAsync(GameStateKey, state);
+            return true;
+        }
+
+        [ReadOnly(true)]
+        public async Task<int[]> GetGameBoardAsync()
+        {
+            var state =  await this.StateManager.GetStateAsync<GameState>(GameStateKey);
+            return state.Board;
+        }
+
+        [ReadOnly(true)]
+        public async Task<string> GetWinnerAsync()
+        {
+            var state = await this.StateManager.GetStateAsync<GameState>(GameStateKey);
+            return state.Winner;
+        }
+
         /// <summary>
         /// This method is called whenever an actor is activated.
         /// An actor is activated the first time any of its methods are invoked.
         /// </summary>
-        protected override Task OnActivateAsync()
-        {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
-
-            // The StateManager is this actor's private state store.
-            // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.
-            // Any serializable object can be saved in the StateManager.
-            // For more information, see https://aka.ms/servicefabricactorsstateserialization
-
-            return this.StateManager.TryAddStateAsync("count", 0);
-        }
-
-        /// <summary>
-        /// TODO: Replace with your own actor method.
-        /// </summary>
-        /// <returns></returns>
-        Task<int> IGame.GetCountAsync(CancellationToken cancellationToken)
-        {
-            return this.StateManager.GetStateAsync<int>("count", cancellationToken);
-        }
-
-        /// <summary>
-        /// TODO: Replace with your own actor method.
-        /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        Task IGame.SetCountAsync(int count, CancellationToken cancellationToken)
-        {
-            // Requests are not guaranteed to be processed in order nor at most once.
-            // The update function here verifies that the incoming count is greater than the current count to preserve order.
-            return this.StateManager.AddOrUpdateStateAsync("count", count, (key, value) => count > value ? count : value, cancellationToken);
-        }
+protected override async Task OnActivateAsync()
+{
+    ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+    await this.StateManager.TryAddStateAsync(GameStateKey , new GameState
+    {
+        Board = new int[9],
+        NextPlayerIndex = 0,
+        NumberOfMoves = 0,
+        Players = new List<Tuple<long, string>>(),
+        Winner = ""
+    });
+}
     }
 }
