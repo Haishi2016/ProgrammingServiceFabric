@@ -1,0 +1,5 @@
+version: '2'
+web:
+  image: hbai/sf-compose-helloworld
+  ports:
+    - 8180:8180
