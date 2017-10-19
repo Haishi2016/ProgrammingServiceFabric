@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "CarApplication", "CarApplication\CarApplication.sfproj", "{E545E522-E0FA-4411-BE2C-6553632EFA27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarActor", "CarActor\CarActor.csproj", "{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarActor.Interfaces", "CarActor.Interfaces\CarActor.Interfaces.csproj", "{651E7131-11D4-4661-8705-8A1D435BB57D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarClient", "CarClient\CarClient.csproj", "{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Debug|x64.ActiveCfg = Debug|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Debug|x64.Build.0 = Debug|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Debug|x64.Deploy.0 = Debug|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Release|Any CPU.ActiveCfg = Release|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Release|x64.ActiveCfg = Release|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Release|x64.Build.0 = Release|x64
+		{E545E522-E0FA-4411-BE2C-6553632EFA27}.Release|x64.Deploy.0 = Release|x64
+		{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}.Debug|x64.ActiveCfg = Debug|x64
+		{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}.Debug|x64.Build.0 = Debug|x64
+		{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}.Release|Any CPU.ActiveCfg = Release|x64
+		{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}.Release|x64.ActiveCfg = Release|x64
+		{B2AFDD75-0681-418C-9E0D-7DF0FDEAC0A1}.Release|x64.Build.0 = Release|x64
+		{651E7131-11D4-4661-8705-8A1D435BB57D}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{651E7131-11D4-4661-8705-8A1D435BB57D}.Debug|x64.ActiveCfg = Debug|x64
+		{651E7131-11D4-4661-8705-8A1D435BB57D}.Debug|x64.Build.0 = Debug|x64
+		{651E7131-11D4-4661-8705-8A1D435BB57D}.Release|Any CPU.ActiveCfg = Release|x64
+		{651E7131-11D4-4661-8705-8A1D435BB57D}.Release|x64.ActiveCfg = Release|x64
+		{651E7131-11D4-4661-8705-8A1D435BB57D}.Release|x64.Build.0 = Release|x64
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Debug|x64.Build.0 = Debug|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Release|x64.ActiveCfg = Release|Any CPU
+		{AA7AD1A1-6586-4D76-A5DE-2FF615BCFF2F}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
