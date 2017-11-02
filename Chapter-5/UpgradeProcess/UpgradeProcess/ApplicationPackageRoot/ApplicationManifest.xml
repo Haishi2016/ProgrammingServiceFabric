@@ -1,9 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ApplicationManifest ApplicationTypeName="UpgradeProcessType"
-                     ApplicationTypeVersion="2.0.0"
-                     xmlns="http://schemas.microsoft.com/2011/01/fabric"
-                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="UpgradeProcessType" ApplicationTypeVersion="2.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="TestService_InstanceCount" DefaultValue="-1" />
   </Parameters>
@@ -13,8 +9,14 @@
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="TestServicePkg" ServiceManifestVersion="2.0.0" />
     <ConfigOverrides />
+    <Policies>
+      <RunAsPolicy CodePackageRef="Code" UserRef="SetupAdminuser" EntryPointType="Setup"/>
+      <RunAsPolicy CodePackageRef="Code" UserRef="WebUser"/>
+      <SecurityAccessPolicy ResourceRef="HttpsEndPoint" PrincipalRef="WebUser"/>
+      <EndpointBindingPolicy EndpointRef="HttpsEndPoint" CertificateRef="MyCert"/>
+    </Policies>
   </ServiceManifestImport>
-  <DefaultServices>
+  <DefaultServices>    
     <!-- The section below creates instances of service types, when an instance of this 
          application type is created. You can also create one or more instances of service type using the 
          ServiceFabric PowerShell module.
@@ -26,4 +28,23 @@
       </StatelessService>
     </Service>
   </DefaultServices>
+  <Principals>
+    <Groups>
+      <Group Name="MyAdminGroup">
+        <Membership>
+          <SystemGroup Name="Administrators"/>
+        </Membership>
+      </Group>
+    </Groups>
+    <Users>
+      <User Name="SetupAdminUser">
+        <MemberOf>
+          <SystemGroup Name="Administrators"/>
+        </MemberOf>
+      </User>
+    </Users>
+  </Principals>
+<Policies>
+  <DefaultRunAsPolicy UserRef="MyServiceAccount"/>
+</Policies>  
 </ApplicationManifest>
