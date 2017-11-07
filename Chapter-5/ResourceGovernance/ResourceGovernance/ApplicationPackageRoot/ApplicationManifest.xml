@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="ResourceGovernanceType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="TestService_InstanceCount" DefaultValue="-1" />
+  </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="TestServicePkg" ServiceManifestVersion="1.0.0" />
+    <Policies>
+      <ServicePackageResourceGovernancePolicy CpuCores="1" />
+      <ResourceGovernancePolicy CodePackageRef="CodeA" MemoryInMB="1024" CpuShares="512" />
+      <ResourceGovernancePolicy CodePackageRef="CodeB" MemoryInMB="1024" CpuShares="256" />
+    </Policies>
+  </ServiceManifestImport>
+  <DefaultServices>
+    <Service Name="TestService">
+      <StatelessService ServiceTypeName="TestServiceType" InstanceCount="[TestService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+  </DefaultServices>
+</ApplicationManifest>

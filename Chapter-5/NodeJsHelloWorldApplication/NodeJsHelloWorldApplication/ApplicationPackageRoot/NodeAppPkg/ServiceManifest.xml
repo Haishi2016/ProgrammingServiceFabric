@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest Name="NodeAppPkg"
+                 Version="1.0.0"
+                 xmlns="http://schemas.microsoft.com/2011/01/fabric"
+                 xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ServiceTypes>
+    <StatelessServiceType ServiceTypeName="NodeAppType" UseImplicitHost="true" />
+  </ServiceTypes>
+  <CodePackage Name="Code" Version="1.0.0">
+    <SetupEntryPoint>
+      <ExeHost>
+        <Program>installNode.cmd</Program>
+        <WorkingFolder>CodeBase</WorkingFolder>
+      </ExeHost>
+    </SetupEntryPoint>
+    <EntryPoint>
+      <ExeHost>
+        <Program>launchApp.cmd</Program>
+        <Arguments>server.js</Arguments>
+        <WorkingFolder>CodeBase</WorkingFolder>
+      </ExeHost>
+    </EntryPoint>
+  </CodePackage>
+  <ConfigPackage Name="Config" Version="1.0.0" />
+  <Resources>
+    <Endpoints>
+      <Endpoint Name="ServiceEndpoint" Protocol="http" Port="80"/>
+    </Endpoints>
+  </Resources>
+</ServiceManifest>

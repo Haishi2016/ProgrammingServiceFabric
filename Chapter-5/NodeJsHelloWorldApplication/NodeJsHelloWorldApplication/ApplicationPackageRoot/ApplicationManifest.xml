@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest ApplicationTypeName="NodeJsHelloWorldApplicationType"
+                     ApplicationTypeVersion="1.0.0"
+                     xmlns="http://schemas.microsoft.com/2011/01/fabric"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Parameters>
+    <Parameter Name="NodeApp_InstanceCount" DefaultValue="-1" />
+  </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="NodeAppPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+    <Policies>
+      <RunAsPolicy CodePackageRef="Code" UserRef="SetupAdmin" EntryPointType="Setup"/>
+    </Policies>
+  </ServiceManifestImport>
+  <DefaultServices>
+    <Service Name="NodeApp" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="NodeAppType" InstanceCount="[NodeApp_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+  </DefaultServices>
+  <Principals>
+    <Users>
+      <User Name="SetupAdmin">
+        <MemberOf>
+          <SystemGroup Name="Administrators"/>
+        </MemberOf>
+      </User>
+    </Users>
+  </Principals>
+</ApplicationManifest>
