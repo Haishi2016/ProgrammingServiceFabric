@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "CustomSerializerTest", "CustomSerializerTest\CustomSerializerTest.sfproj", "{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonService", "PersonService\PersonService.csproj", "{CD27C3BF-A372-4C22-8387-ED5C05B0A047}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}.Debug|x64.ActiveCfg = Debug|x64
+		{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}.Debug|x64.Build.0 = Debug|x64
+		{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}.Debug|x64.Deploy.0 = Debug|x64
+		{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}.Release|x64.ActiveCfg = Release|x64
+		{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}.Release|x64.Build.0 = Release|x64
+		{127DFD5B-3460-4E3A-B324-70ACB5AE62A2}.Release|x64.Deploy.0 = Release|x64
+		{CD27C3BF-A372-4C22-8387-ED5C05B0A047}.Debug|x64.ActiveCfg = Debug|x64
+		{CD27C3BF-A372-4C22-8387-ED5C05B0A047}.Debug|x64.Build.0 = Debug|x64
+		{CD27C3BF-A372-4C22-8387-ED5C05B0A047}.Release|x64.ActiveCfg = Release|x64
+		{CD27C3BF-A372-4C22-8387-ED5C05B0A047}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
