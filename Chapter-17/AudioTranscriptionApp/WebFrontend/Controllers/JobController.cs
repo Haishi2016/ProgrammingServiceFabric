@@ -12,6 +12,9 @@ using Microsoft.ServiceFabric.Services.Communication.Wcf.Client;
 using Microsoft.ServiceFabric.Services.Communication.Client;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.ServiceFabric.Actors.Client;
+using Transcriber.Interfaces;
+using Microsoft.ServiceFabric.Actors;
 
 namespace WebFrontend.Controllers
 {
@@ -49,6 +52,15 @@ namespace WebFrontend.Controllers
             {
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.Name);
                 await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
+                ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(Guid.NewGuid()), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
+                try
+                {
+                    await proxy.SubmitJob(file.Name, false, new System.Threading.CancellationToken());
+                }
+                catch (Exception exp)
+                {
+                    string a = exp.Message;
+                }
             }        
             return Ok();
         }

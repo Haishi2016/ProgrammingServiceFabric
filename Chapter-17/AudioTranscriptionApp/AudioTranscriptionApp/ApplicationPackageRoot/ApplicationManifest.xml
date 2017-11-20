@@ -2,7 +2,13 @@
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="AudioTranscriptionAppType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="WebFrontend_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="TranscriberActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="TranscriberActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TranscriberActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="TranscriberPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WebFrontendPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
@@ -12,6 +18,11 @@
       <StatelessService ServiceTypeName="WebFrontendType" InstanceCount="[WebFrontend_InstanceCount]">
         <SingletonPartition />
       </StatelessService>
+    </Service>
+    <Service Name="TranscriberActorService" GeneratedIdRef="14bd49d3-4527-43e2-aad8-26bb3a62a421|Persisted">
+      <StatefulService ServiceTypeName="TranscriberActorServiceType" TargetReplicaSetSize="[TranscriberActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TranscriberActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[TranscriberActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
     </Service>
   </DefaultServices>
 </ApplicationManifest>
