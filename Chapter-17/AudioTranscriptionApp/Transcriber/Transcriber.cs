@@ -169,7 +169,7 @@ namespace Transcriber
             if (args.Phrases.Count > 0)
             {
                 int fileIndex = await this.StateManager.GetStateAsync<int>("FileIndex");
-                string bestText = args.Phrases[0].DisplayText;
+                string bestText = args.Phrases[args.Phrases.Count-1].DisplayText;
                 if (mTexts.ContainsKey(fileIndex))
                     mTexts[fileIndex] += bestText;
                 else
