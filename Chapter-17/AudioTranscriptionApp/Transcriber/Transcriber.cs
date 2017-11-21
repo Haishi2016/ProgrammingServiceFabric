@@ -13,6 +13,12 @@ using Microsoft.Bing.Speech;
 using System.IO;
 using System.Text;
 using NAudio.Wave;
+using System.ServiceModel.Channels;
+using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Communication.Wcf;
+using Microsoft.ServiceFabric.Services.Communication.Wcf.Client;
+using StateAggregator.Interfaces;
+using Microsoft.ServiceFabric.Services.Communication.Client;
 
 namespace Transcriber
 {
@@ -64,7 +70,7 @@ namespace Transcriber
         }
 
         public async Task SubmitJob(string url, bool isPublic, CancellationToken cancellationToken)
-        {
+        {                        
             string tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             if (!Directory.Exists(tempFolder))
                 Directory.CreateDirectory(tempFolder);
@@ -75,12 +81,25 @@ namespace Transcriber
 
             var files = await splitFiles(await convertToWav(fileName));
 
+            
             await this.StateManager.TryAddStateAsync<string>("FileName", url.Replace('.','_'));
             await this.StateManager.TryAddStateAsync<List<string>>("Files", files);
             await this.StateManager.TryAddStateAsync<int>("FileIndex", -1);
             await this.StateManager.TryAddStateAsync<bool>("ActiveFile", false);
             await this.StateManager.SaveStateAsync();
-            mReminder = await this.RegisterReminderAsync("Transcription", new byte[] { (byte)files.Count }, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(3));            
+
+            Binding binding = WcfUtility.CreateTcpClientBinding();
+            IServicePartitionResolver partitionResolver = ServicePartitionResolver.GetDefault();
+            var wcfClientFactory = new WcfCommunicationClientFactory<IStateAggregator>(
+                clientBinding: binding,
+                servicePartitionResolver: partitionResolver
+                );
+            var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
+                wcfClientFactory,
+                new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
+            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportProgress(url.Replace('.', '_'), 0, "Job created."));
+
+            mReminder = await this.RegisterReminderAsync("Transcription", new byte[] { (byte)files.Count }, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(3));
         }
         private async Task<string> convertToWav(string file)
         {
@@ -161,7 +180,7 @@ namespace Transcriber
             }
         }
         public Task OnPartialResult(RecognitionPartialResult args)
-        {
+        {            
             return CompletedTask;
         }
         public async Task OnRecognitionResult(RecognitionResult args)
@@ -201,6 +220,17 @@ namespace Transcriber
             {
                 await blockBlob.UploadFromStreamAsync(stream);
             }
+
+            Binding binding = WcfUtility.CreateTcpClientBinding();
+            IServicePartitionResolver partitionResolver = ServicePartitionResolver.GetDefault();
+            var wcfClientFactory = new WcfCommunicationClientFactory<IStateAggregator>(
+                clientBinding: binding,
+                servicePartitionResolver: partitionResolver
+                );
+            var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
+                wcfClientFactory,
+                new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
+            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportCompletion(fileName, blockBlob.Uri.AbsoluteUri));
         }
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {
@@ -230,7 +260,7 @@ namespace Transcriber
                     await this.StateManager.SetStateAsync<bool>("ActiveFile", true);
                     await this.StateManager.SaveStateAsync();
                     await transcribeAudioSegement(fileName);
-                }
+                }                
             }
         }
     }

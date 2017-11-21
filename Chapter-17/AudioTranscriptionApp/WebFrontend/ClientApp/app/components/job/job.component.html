@@ -1,7 +1,24 @@
-<h1>Counter</h1>
+<h1>Jobs</h1>
 
-<p>This is a simple example of an Angular component.</p>
+<p>Transcription Jobs</p>
 
-<p>Current count: <strong>{{ currentCount }}</strong></p>
+<p *ngIf="!jobs"><em>Loading...</em></p>
 
-<button (click)="incrementCounter()">Increment</button>
+<table class='table' *ngIf="jobs">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Url</th>            
+            <th>Progress</th>            
+            <th>Message</th>            
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let job of jobs">
+            <td>{{ job.name }}</td>
+            <td>{{ job.url }}</td>
+            <td>{{ job.progress }}</td>
+            <td>{{ job.message }}</td>
+        </tr>
+    </tbody>
+</table>

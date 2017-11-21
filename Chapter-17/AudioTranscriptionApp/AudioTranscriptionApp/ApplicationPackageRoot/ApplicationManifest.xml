@@ -1,11 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="AudioTranscriptionAppType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
+    <Parameter Name="StateAggregator_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="StateAggregator_PartitionCount" DefaultValue="1" />
+    <Parameter Name="StateAggregator_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="WebFrontend_InstanceCount" DefaultValue="-1" />
     <Parameter Name="TranscriberActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="TranscriberActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="TranscriberActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="StateAggregatorPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="TranscriberPkg" ServiceManifestVersion="1.0.0" />
   </ServiceManifestImport>
@@ -14,6 +21,11 @@
     <ConfigOverrides />
   </ServiceManifestImport>
   <DefaultServices>
+    <Service Name="StateAggregator">
+      <StatefulService ServiceTypeName="StateAggregatorType" TargetReplicaSetSize="[StateAggregator_TargetReplicaSetSize]" MinReplicaSetSize="[StateAggregator_MinReplicaSetSize]">
+        <SingletonPartition />
+      </StatefulService>
+    </Service>
     <Service Name="WebFrontend" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="WebFrontendType" InstanceCount="[WebFrontend_InstanceCount]">
         <SingletonPartition />

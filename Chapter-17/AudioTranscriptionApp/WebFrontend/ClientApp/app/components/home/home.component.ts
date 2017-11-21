@@ -20,13 +20,23 @@ export class HomeComponent {
     
     public submitFileJob() {
         const formData = new FormData();
-
+        
         for (let file of this.filesToHandle)
             formData.append(file.name, file);
 
-        this.mHttp.post(this.mBaseUrl + 'api/Job/SubmitFileJob', formData).subscribe(event => {
-            console.log('Files uploaded!');
-        }, error => console.error(error));
+        var xHttp = new XMLHttpRequest();
+        xHttp.upload.onprogress = (e) => {
+            this.uploadProgress = Math.round(e.loaded / e.total * 100);
+        };
+        //xHttp.upload.addEventListener("progress", (e)=> {
+        //    this.uploadProgress = Math.round(e.loaded / e.total * 100);
+        //});
+        xHttp.open("POST", this.mBaseUrl + 'api/Job/SubmitFileJob', true);
+        xHttp.send(formData);
+        //this.mHttp.post(this.mBaseUrl + 'api/Job/SubmitFileJob', formData).subscribe(event => {
+            
+        //    console.log('Files uploaded!');
+        //}, error => console.error(error));
     }
     public submitURLJob() {
         alert(this.jobUrl);

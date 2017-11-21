@@ -15,6 +15,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.ServiceFabric.Actors.Client;
 using Transcriber.Interfaces;
 using Microsoft.ServiceFabric.Actors;
+using StateAggregator.Interfaces;
+using System.ServiceModel.Channels;
 
 namespace WebFrontend.Controllers
 {
@@ -29,15 +31,26 @@ namespace WebFrontend.Controllers
         };
 
         [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        public async Task<IEnumerable<JobStatus>> Jobs()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+            Binding binding = WcfUtility.CreateTcpClientBinding();
+            IServicePartitionResolver partitionResolver = ServicePartitionResolver.GetDefault();
+            var wcfClientFactory = new WcfCommunicationClientFactory<IStateAggregator>(
+                clientBinding: binding,
+                servicePartitionResolver: partitionResolver
+                );
+            var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
+                wcfClientFactory,
+                new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
+            var result = await jobClient.InvokeWithRetryAsync(client => client.Channel.ListJobs());
+            return result;
+            //var rng = new Random();
+            //return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            //{
+            //    DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
+            //    TemperatureC = rng.Next(-20, 55),
+            //    Summary = Summaries[rng.Next(Summaries.Length)]
+            //});
         }
         [HttpPost("[action]"), DisableRequestSizeLimit]
         public async Task<IActionResult> SubmitFileJob()
@@ -67,17 +80,10 @@ namespace WebFrontend.Controllers
 
         public class WeatherForecast
         {
-            public string DateFormatted { get; set; }
-            public int TemperatureC { get; set; }
-            public string Summary { get; set; }
-
-            public int TemperatureF
-            {
-                get
-                {
-                    return 32 + (int)(TemperatureC / 0.5556);
-                }
-            }
+            public string Name { get; set; }
+            public int Percentage { get; set; }
+            public string Message { get; set; }
+            public string Url { get; set; }            
         }
     }
 }
