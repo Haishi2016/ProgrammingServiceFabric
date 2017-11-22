@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { Http } from '@angular/http';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'home',
@@ -11,32 +12,32 @@ export class HomeComponent {
     public filesToHandle: Array<File>;
     private mHttp: Http;
     private mBaseUrl: string;
+    public uploading = false;
+    private mRouter: Router;
 
-    constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
+    constructor(http: Http, router: Router, @Inject('BASE_URL') baseUrl: string) {
+        this.mRouter = router;
         this.mHttp = http;
         this.mBaseUrl = baseUrl;
         this.filesToHandle = [];
     }
     
     public submitFileJob() {
+        this.uploading = true;
         const formData = new FormData();
-        
+
         for (let file of this.filesToHandle)
             formData.append(file.name, file);
 
         var xHttp = new XMLHttpRequest();
-        xHttp.upload.onprogress = (e) => {
-            this.uploadProgress = Math.round(e.loaded / e.total * 100);
+        xHttp.upload.addEventListener("progress", (e) => { if (e.lengthComputable) { this.uploadProgress = Math.round(e.loaded / e.total * 100); } }, false);
+        xHttp.upload.onloadend = (e) => {
+            this.uploadProgress = 100;
+            this.uploading = false;
+            this.mRouter.navigate([ '/job' ]);            
         };
-        //xHttp.upload.addEventListener("progress", (e)=> {
-        //    this.uploadProgress = Math.round(e.loaded / e.total * 100);
-        //});
-        xHttp.open("POST", this.mBaseUrl + 'api/Job/SubmitFileJob', true);
+        xHttp.open("POST", this.mBaseUrl + "api/Job/SubmitFileJob", true);
         xHttp.send(formData);
-        //this.mHttp.post(this.mBaseUrl + 'api/Job/SubmitFileJob', formData).subscribe(event => {
-            
-        //    console.log('Files uploaded!');
-        //}, error => console.error(error));
     }
     public submitURLJob() {
         alert(this.jobUrl);

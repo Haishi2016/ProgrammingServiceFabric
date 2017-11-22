@@ -23,13 +23,6 @@ namespace WebFrontend.Controllers
     [Route("api/[controller]")]
     public class JobController : Controller
     {
-        private static Random mRand = new Random();
-
-        private static string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         [HttpGet("[action]")]
         public async Task<IEnumerable<JobStatus>> Jobs()
         {
@@ -44,13 +37,6 @@ namespace WebFrontend.Controllers
                 new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
             var result = await jobClient.InvokeWithRetryAsync(client => client.Channel.ListJobs());
             return result;
-            //var rng = new Random();
-            //return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            //{
-            //    DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-            //    TemperatureC = rng.Next(-20, 55),
-            //    Summary = Summaries[rng.Next(Summaries.Length)]
-            //});
         }
         [HttpPost("[action]"), DisableRequestSizeLimit]
         public async Task<IActionResult> SubmitFileJob()
@@ -66,24 +52,9 @@ namespace WebFrontend.Controllers
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.Name);
                 await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
                 ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(Guid.NewGuid()), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
-                try
-                {
-                    await proxy.SubmitJob(file.Name, false, new System.Threading.CancellationToken());
-                }
-                catch (Exception exp)
-                {
-                    string a = exp.Message;
-                }
+                proxy.SubmitJob(file.Name, false, new System.Threading.CancellationToken());
             }        
             return Ok();
-        }
-
-        public class WeatherForecast
-        {
-            public string Name { get; set; }
-            public int Percentage { get; set; }
-            public string Message { get; set; }
-            public string Url { get; set; }            
         }
     }
 }

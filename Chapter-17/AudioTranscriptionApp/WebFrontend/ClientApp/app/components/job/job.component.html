@@ -15,10 +15,10 @@
     </thead>
     <tbody>
         <tr *ngFor="let job of jobs">
-            <td>{{ job.name }}</td>
-            <td>{{ job.url }}</td>
-            <td>{{ job.progress }}</td>
-            <td>{{ job.message }}</td>
+            <td><b>{{ job.name }}</b></td>
+            <td style="text-wrap:none"><span *ngIf="job.url" style="text-wrap:none"><a href="{{ job.url }}" target="_blank">Transcript</a></span></td>
+            <td><span *ngIf="job.percent > 0 && job.percent < 100"><progress max="100" value="{{ job.percent }}"></progress></span></td>
+            <td width="100%">{{ job.message }}</td>
         </tr>
     </tbody>
 </table>

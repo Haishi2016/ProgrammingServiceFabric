@@ -48,6 +48,8 @@ namespace StateAggregator
                     new JobStatus { Name = name, Url = url },
                     (key, val) => {
                         val.Url = url;
+                        val.Message = "Done";
+                        val.Percent = 100;
                         return val;
                     });
                 await tx.CommitAsync();
@@ -60,9 +62,9 @@ namespace StateAggregator
             using (var tx = this.StateManager.CreateTransaction())
             {
                 await myDictionary.AddOrUpdateAsync(tx, name,
-                    new JobStatus { Name = name, Message = message, Precent = percent },
+                    new JobStatus { Name = name, Message = message, Percent = percent },
                     (key, val) => {
-                        val.Precent = percent;
+                        val.Percent = percent;
                         val.Message = message;
                         return val;
                     });

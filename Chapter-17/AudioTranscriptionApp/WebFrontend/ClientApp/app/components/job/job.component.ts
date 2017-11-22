@@ -7,11 +7,19 @@ import { Http } from '@angular/http';
 })
 export class JobComponent {
     public jobs: Job[];
-
+    private mHttp: Http;
+    private mUrl: string;
+    private mTimer: any;
     constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
-        http.get(baseUrl + 'api/Job/Jobs').subscribe(result => {
+        this.mHttp = http;
+        this.mUrl = baseUrl;
+        this.mTimer = setTimeout(() => { this.refreshPage() }, 0);
+    }
+    public refreshPage() {
+        this.mHttp.get(this.mUrl + 'api/Job/Jobs').subscribe(result => {
             this.jobs = result.json() as Job[];
         }, error => console.error(error));
+        this.mTimer = setTimeout(() => { this.refreshPage() }, 2000);
     }
 }
 

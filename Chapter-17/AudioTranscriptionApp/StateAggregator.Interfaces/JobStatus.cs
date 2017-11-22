@@ -15,7 +15,7 @@ namespace StateAggregator.Interfaces
         [DataMember]
         public string Url { get; set; }
         [DataMember]
-        public int Precent { get; set; }
+        public int Percent { get; set; }
         [DataMember]
         public string Message { get; set; }
     }
