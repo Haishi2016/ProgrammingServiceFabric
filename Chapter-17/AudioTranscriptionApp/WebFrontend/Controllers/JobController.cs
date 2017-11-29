@@ -15,29 +15,28 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.ServiceFabric.Actors.Client;
 using Transcriber.Interfaces;
 using Microsoft.ServiceFabric.Actors;
+using StateAggregator.Interfaces;
+using System.ServiceModel.Channels;
 
 namespace WebFrontend.Controllers
 {
     [Route("api/[controller]")]
     public class JobController : Controller
     {
-        private static Random mRand = new Random();
-
-        private static string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        public async Task<IEnumerable<JobStatus>> Jobs()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+            Binding binding = WcfUtility.CreateTcpClientBinding();
+            IServicePartitionResolver partitionResolver = ServicePartitionResolver.GetDefault();
+            var wcfClientFactory = new WcfCommunicationClientFactory<IStateAggregator>(
+                clientBinding: binding,
+                servicePartitionResolver: partitionResolver
+                );
+            var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
+                wcfClientFactory,
+                new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
+            var result = await jobClient.InvokeWithRetryAsync(client => client.Channel.ListJobs());
+            return result;
         }
         [HttpPost("[action]"), DisableRequestSizeLimit]
         public async Task<IActionResult> SubmitFileJob()
@@ -53,31 +52,9 @@ namespace WebFrontend.Controllers
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.Name);
                 await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
                 ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(Guid.NewGuid()), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
-                try
-                {
-                    await proxy.SubmitJob(file.Name, false, new System.Threading.CancellationToken());
-                }
-                catch (Exception exp)
-                {
-                    string a = exp.Message;
-                }
+                proxy.SubmitJob(file.Name, false, new System.Threading.CancellationToken());
             }        
             return Ok();
-        }
-
-        public class WeatherForecast
-        {
-            public string DateFormatted { get; set; }
-            public int TemperatureC { get; set; }
-            public string Summary { get; set; }
-
-            public int TemperatureF
-            {
-                get
-                {
-                    return 32 + (int)(TemperatureC / 0.5556);
-                }
-            }
         }
     }
 }

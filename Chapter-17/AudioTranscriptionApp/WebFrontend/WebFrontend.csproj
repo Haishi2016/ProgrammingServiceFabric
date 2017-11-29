@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StateAggregator.Interfaces\StateAggregator.Interfaces.csproj" />
     <ProjectReference Include="..\Transcriber.Interfaces\Transcriber.Interfaces.csproj" />
   </ItemGroup>
 

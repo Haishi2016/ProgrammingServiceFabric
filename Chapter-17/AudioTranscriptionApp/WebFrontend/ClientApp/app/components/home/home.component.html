@@ -17,17 +17,21 @@
 <div>
     <div>
         <div>
-            <div>Upload a mp4 file from your computer</div>
+            <div>Upload a mp3 file from your computer</div>
             <input type="file" (change)="fileChangeEvent($event)" placeholder="Upload audio file..." />
             <button (click)="submitFileJob()">Upload a File</button>
-            <span *ngIf="uploadProgress > 0 && uploadProgress < 100">
+            <img *ngIf="uploading" src="../job/loading.gif" />
+           <!-- <span *ngIf="uploadProgress > 0 && uploadProgress < 100">
                 {{uploadProgress}}%
             </span>
+            <progress max="100" value="{{uploadProgress}}"></progress> -->
         </div>
+        <!--
         <div>
             <div>Share a link to a public web address</div>
             <input type="text" [(ngModel)]="jobUrl" />            
             <button (click)="submitURLJob()">Paste a URL</button>
         </div>
+        -->
     </div>
 </div>
