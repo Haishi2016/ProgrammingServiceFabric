@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "ApplicationInsightsTestApplication", "ApplicationInsightsTestApplication\ApplicationInsightsTestApplication.sfproj", "{A2B96F69-09CE-40B7-944C-0BED224FA9CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stateless1", "Stateless1\Stateless1.csproj", "{E82F7F5E-3AB6-4980-B965-C17C1800F287}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2B96F69-09CE-40B7-944C-0BED224FA9CE}.Debug|x64.ActiveCfg = Debug|x64
+		{A2B96F69-09CE-40B7-944C-0BED224FA9CE}.Debug|x64.Build.0 = Debug|x64
+		{A2B96F69-09CE-40B7-944C-0BED224FA9CE}.Debug|x64.Deploy.0 = Debug|x64
+		{A2B96F69-09CE-40B7-944C-0BED224FA9CE}.Release|x64.ActiveCfg = Release|x64
+		{A2B96F69-09CE-40B7-944C-0BED224FA9CE}.Release|x64.Build.0 = Release|x64
+		{A2B96F69-09CE-40B7-944C-0BED224FA9CE}.Release|x64.Deploy.0 = Release|x64
+		{E82F7F5E-3AB6-4980-B965-C17C1800F287}.Debug|x64.ActiveCfg = Debug|x64
+		{E82F7F5E-3AB6-4980-B965-C17C1800F287}.Debug|x64.Build.0 = Debug|x64
+		{E82F7F5E-3AB6-4980-B965-C17C1800F287}.Release|x64.ActiveCfg = Release|x64
+		{E82F7F5E-3AB6-4980-B965-C17C1800F287}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9EC157EA-2BE6-4947-8775-45811601E375}
+	EndGlobalSection
+EndGlobal

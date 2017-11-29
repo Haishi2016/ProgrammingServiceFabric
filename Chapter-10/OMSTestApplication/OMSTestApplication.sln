@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "OMSTestApplication", "OMSTestApplication\OMSTestApplication.sfproj", "{200B7DEC-0AA4-4A3A-A721-36093164F863}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stateless1", "Stateless1\Stateless1.csproj", "{FD0DECD6-91BF-4AF5-8D3A-CB5880E81F82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{200B7DEC-0AA4-4A3A-A721-36093164F863}.Debug|x64.ActiveCfg = Debug|x64
+		{200B7DEC-0AA4-4A3A-A721-36093164F863}.Debug|x64.Build.0 = Debug|x64
+		{200B7DEC-0AA4-4A3A-A721-36093164F863}.Debug|x64.Deploy.0 = Debug|x64
+		{200B7DEC-0AA4-4A3A-A721-36093164F863}.Release|x64.ActiveCfg = Release|x64
+		{200B7DEC-0AA4-4A3A-A721-36093164F863}.Release|x64.Build.0 = Release|x64
+		{200B7DEC-0AA4-4A3A-A721-36093164F863}.Release|x64.Deploy.0 = Release|x64
+		{FD0DECD6-91BF-4AF5-8D3A-CB5880E81F82}.Debug|x64.ActiveCfg = Debug|x64
+		{FD0DECD6-91BF-4AF5-8D3A-CB5880E81F82}.Debug|x64.Build.0 = Debug|x64
+		{FD0DECD6-91BF-4AF5-8D3A-CB5880E81F82}.Release|x64.ActiveCfg = Release|x64
+		{FD0DECD6-91BF-4AF5-8D3A-CB5880E81F82}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42B1209D-270C-4FDE-B7B1-327E1A94E9BC}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,18 @@
+{
+  "inputs": [
+    {
+      "type": "Trace",
+      "traceLevel": "Information"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "OmsOutput",
+      "workspaceId": "37070b9c-2827-4c29-a596-407d272092e0",
+      "workspaceKey": "44WqHe8A9zpCqfXQsA0xexvHJr7FXUY7Xi4RAQS6Z6QFQrxZwUOwAhEi6Ax0g+UdodWGcUS5uss/UNJsli/Rkg==",
+      "logTypeName": "MyAppTracings"
+    }
+  ],
+  "schemaVersion": "2016-08-11",
+  "extensions": []
+}

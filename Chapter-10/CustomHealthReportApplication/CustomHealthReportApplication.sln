@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "CustomHealthReportApplication", "CustomHealthReportApplication\CustomHealthReportApplication.sfproj", "{C03C81FB-3949-490B-B15D-FBBFB90E5E58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadService", "BadService\BadService.csproj", "{1C6942F5-C1D0-4326-9BE4-98337403A692}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C03C81FB-3949-490B-B15D-FBBFB90E5E58}.Debug|x64.ActiveCfg = Debug|x64
+		{C03C81FB-3949-490B-B15D-FBBFB90E5E58}.Debug|x64.Build.0 = Debug|x64
+		{C03C81FB-3949-490B-B15D-FBBFB90E5E58}.Debug|x64.Deploy.0 = Debug|x64
+		{C03C81FB-3949-490B-B15D-FBBFB90E5E58}.Release|x64.ActiveCfg = Release|x64
+		{C03C81FB-3949-490B-B15D-FBBFB90E5E58}.Release|x64.Build.0 = Release|x64
+		{C03C81FB-3949-490B-B15D-FBBFB90E5E58}.Release|x64.Deploy.0 = Release|x64
+		{1C6942F5-C1D0-4326-9BE4-98337403A692}.Debug|x64.ActiveCfg = Debug|x64
+		{1C6942F5-C1D0-4326-9BE4-98337403A692}.Debug|x64.Build.0 = Debug|x64
+		{1C6942F5-C1D0-4326-9BE4-98337403A692}.Release|x64.ActiveCfg = Release|x64
+		{1C6942F5-C1D0-4326-9BE4-98337403A692}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6765628E-4C16-4439-8A46-B72AD60C19E1}
+	EndGlobalSection
+EndGlobal
