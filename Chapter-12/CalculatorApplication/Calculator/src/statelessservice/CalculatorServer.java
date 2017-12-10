@@ -8,7 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class CalculatorServer {
 	private HttpServer server;
     private int port;
@@ -73,8 +72,7 @@ public class CalculatorServer {
     	    buffer = Integer.toString(c).getBytes("UTF-8");
     	} catch (NumberFormatException e) {
     		buffer = ("Invalid parameters").getBytes("UTF-8");
-    	}
-    	
+    	}   	
     	return buffer;
     }   
 }
