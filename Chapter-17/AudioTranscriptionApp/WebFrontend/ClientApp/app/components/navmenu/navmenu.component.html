@@ -8,6 +8,9 @@
                 <span class='icon-bar'></span>
             </button>
             <a class='navbar-brand' [routerLink]="['/home']">Audio Transcription</a>
+            <span class="navbar-text glyphicon glyphicon glyphicon-user">
+                <span style="padding-left:5px;">{{userName}}</span>
+            </span>
         </div>
         <div class='clearfix'></div>
         <div class='navbar-collapse collapse'>
@@ -22,11 +25,11 @@
                         <span class='glyphicon glyphicon-education'></span> Jobs
                     </a>
                 </li>
-                <li [routerLinkActive]="['link-active']">
+                <!--<li [routerLinkActive]="['link-active']">
                     <a [routerLink]="['/insight']">
                         <span class='glyphicon glyphicon-th-list'></span> Insights
                     </a>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>

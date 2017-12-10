@@ -17,6 +17,7 @@ namespace StateAggregator.Interfaces
         [DataMember]
         public int Percent { get; set; }
         [DataMember]
+        public DateTime Date { get; set; }
         public string Message { get; set; }
     }
 }

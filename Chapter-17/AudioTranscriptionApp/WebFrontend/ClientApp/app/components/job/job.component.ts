@@ -1,11 +1,11 @@
-import { Component, Inject  } from '@angular/core';
+import { Component, Inject, OnInit  } from '@angular/core';
 import { Http } from '@angular/http';
 
 @Component({
     selector: 'job',
     templateUrl: './job.component.html'
 })
-export class JobComponent {
+export class JobComponent implements OnInit{
     public jobs: Job[];
     private mHttp: Http;
     private mUrl: string;
@@ -21,11 +21,15 @@ export class JobComponent {
         }, error => console.error(error));
         this.mTimer = setTimeout(() => { this.refreshPage() }, 2000);
     }
+    ngOnInit() {
+        this.refreshPage();
+    }
 }
 
 interface Job {
     name: string;
     percent: number;
     message: string;
+    date: Date;
     url: string
 }

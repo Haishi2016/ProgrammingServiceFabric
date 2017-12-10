@@ -17,12 +17,18 @@ using Transcriber.Interfaces;
 using Microsoft.ServiceFabric.Actors;
 using StateAggregator.Interfaces;
 using System.ServiceModel.Channels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebFrontend.Controllers
-{
+{        
     [Route("api/[controller]")]
     public class JobController : Controller
     {
+        [HttpGet("[action]")]
+        public async Task<string> GetUserName()
+        {
+            return await Task.FromResult<string>(User.Identity != null ? User.Identity.Name:"");
+        }
         [HttpGet("[action]")]
         public async Task<IEnumerable<JobStatus>> Jobs()
         {

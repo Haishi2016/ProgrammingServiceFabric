@@ -11,6 +11,7 @@ namespace Transcriber
         /// The fetch token URI
         /// </summary>
         private const string FetchTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0";
+        //private const string FetchTokenUri = "https://westus.api.cognitive.microsoft.com/sts/v1.0";
 
         /// <summary>
         /// The subscription key

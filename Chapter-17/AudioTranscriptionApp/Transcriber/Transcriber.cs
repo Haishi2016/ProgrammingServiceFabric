@@ -125,6 +125,9 @@ namespace Transcriber
         private async Task transcribeAudioSegement(string audioFile)
         {
             var preferences = new Preferences("en-US", new Uri("wss://speech.platform.bing.com/api/service/recognition/continuous"), new CognitiveServicesAuthorizationProvider("68ecbfed77384b0badae81995a5b256b"));
+            //var preferences = new Preferences("en-US", new Uri("wss://9598b5e5964e4e9b881fd85f5d380713.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
+            //var preferences = new Preferences("en-US", new Uri("wss://06a2285998274ed6a57103a41df672b3.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
+            //var preferences = new Preferences("en-US", new Uri("wss://5ba5d066af03405ba71e84ba3bc4d185.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
             using (var speechClient = new SpeechClient(preferences))
             {
                 speechClient.SubscribeToPartialResult(this.OnPartialResult);

@@ -19,7 +19,7 @@ export class HomeComponent {
         this.mRouter = router;
         this.mHttp = http;
         this.mBaseUrl = baseUrl;
-        this.filesToHandle = [];
+        this.filesToHandle = [];      
     }
     
     public submitFileJob() {

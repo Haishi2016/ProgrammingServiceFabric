@@ -4,21 +4,23 @@
 
 <p *ngIf="!jobs"><em>Loading...</em></p>
 
-<table class='table' *ngIf="jobs">
+<table class='table table-hover' *ngIf="jobs">
     <thead>
         <tr>
             <th>Name</th>
             <th>Url</th>            
-            <th>Progress</th>            
+            <th>Progress</th>       
+            <th>Date</th>       
             <th>Message</th>            
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let job of jobs">
             <td><b>{{ job.name }}</b></td>
-            <td style="text-wrap:none"><span *ngIf="job.url" style="text-wrap:none"><a href="{{ job.url }}" target="_blank">Transcript</a></span></td>
-            <td><span *ngIf="job.percent > 0 && job.percent < 100"><progress max="100" value="{{ job.percent }}"></progress></span></td>
-            <td width="100%">{{ job.message }}</td>
+            <td width="150px"><span *ngIf="job.url" style="text-wrap:none"><a href="{{ job.url }}" target="_blank">Transcript</a></span></td>
+            <td width="300px"><span *ngIf="job.percent > 0 && job.percent < 100"><progress max="100" value="{{ job.percent }}"></progress></span></td>
+            <td><b>{{ job.date | date:'medium' }}</b></td>
+            <td>{{ job.message }}</td>
         </tr>
     </tbody>
 </table>

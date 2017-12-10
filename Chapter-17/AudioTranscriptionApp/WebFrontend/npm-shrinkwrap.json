@@ -3106,6 +3106,11 @@
       "integrity": "sha1-KzJxhOiZIQEXeyhWP7XnECrNDKk=",
       "dev": true
     },
+    "ng-file-upload": {
+      "version": "12.2.13",
+      "resolved": "https://registry.npmjs.org/ng-file-upload/-/ng-file-upload-12.2.13.tgz",
+      "integrity": "sha1-AYAPOHLlJvlTEPhHfpnk8S0NjRQ="
+    },
     "no-case": {
       "version": "2.3.1",
       "resolved": "https://registry.npmjs.org/no-case/-/no-case-2.3.1.tgz",
