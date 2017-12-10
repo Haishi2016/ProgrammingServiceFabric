@@ -1,4 +1,4 @@
-body {
+﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -8,6 +8,13 @@ body {
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+}
+
+/* Set widths on the form inputs since otherwise they're 100% wide */
+input,
+select,
+textarea {
+    max-width: 280px;
 }
 
 /* Carousel */
@@ -21,15 +28,44 @@ body {
     width: 100%;
 }
 
-/* QR code generator */
-#qrCode {
-    margin: 15px;
-}
-
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */
     .carousel-caption {
         display: none;
     }
+}
+
+table, th, td {
+    border: 1px solid grey;
+    border-collapse: collapse;
+    padding: 5px;
+}
+
+thead tr td {
+    background-color: #399d20;
+    font-weight: bold;
+    color: white;
+}
+
+.money {
+    text-align: right;
+}
+
+tfoot tr td {
+    background-color: #399d20;
+    color: white;
+    text-align: right;
+}
+
+table tr td {
+    text-align: right;
+}
+
+table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+
+table tr:nth-child(even) {
+    background-color: #ffffff;
 }

@@ -1,0 +1,9 @@
+{
+ "ClusterConnectionParameters": 
+ {
+    "ConnectionIPOrURL": "",
+    "ConnectionPort": "",
+    "ClientKey": "",
+    "ClientCert": ""
+ }
+}

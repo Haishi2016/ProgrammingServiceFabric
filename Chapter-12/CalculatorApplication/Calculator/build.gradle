@@ -1,0 +1,67 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+  main {
+     java.srcDirs = ['src']
+     output.classesDir = 'out/classes'
+      resources {
+       srcDirs = ['src']
+     }
+   }
+}
+
+clean.doFirst {
+    delete "${projectDir}/lib"
+    delete "${projectDir}/out"
+    delete "${projectDir}/../CalculatorApplicationApplication/CalculatorPkg/Code/lib"
+    delete "${projectDir}/../CalculatorApplicationApplication/CalculatorPkg/Code/Calculator.jar"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    azuresf
+}
+
+dependencies {
+    azuresf ('com.microsoft.servicefabric:sf-actors:1.0.0-preview1')   
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+task explodeDeps(type: Copy, dependsOn:configurations.azuresf) { task ->
+    configurations.azuresf.filter { it.toString().contains("native") }.each{
+        from zipTree(it)
+    }
+    configurations.azuresf.filter { !it.toString().contains("native") }.each {
+        from it
+    }
+    into "lib"
+    include "lib*.so", "*.jar"
+}
+
+jar {
+    manifest {
+    def mpath = configurations.azuresf.collect {'lib/'+it.getName()}.join (' ')
+    attributes(
+        'Main-Class': 'statelessservice.CalculatorServiceHost',
+        "Class-Path": mpath)
+    baseName "Calculator"
+
+    destinationDir = file('../CalculatorApplicationApplication/CalculatorPkg/Code/')
+    }
+}
+
+compileJava.dependsOn(explodeDeps)
+
+task copyDeps<< {
+    copy {
+        from("lib/")
+        into("../CalculatorApplicationApplication/CalculatorPkg/Code/lib")
+        include('*')
+    }
+}
+
+defaultTasks 'clean', 'jar', 'copyDeps'

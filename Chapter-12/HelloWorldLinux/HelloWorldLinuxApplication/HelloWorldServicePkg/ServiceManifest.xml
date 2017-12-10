@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ServiceManifest Name="HelloWorldServicePkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Description>Service that implements a HelloWorldService service</Description>
+  <ServiceTypes>
+    <StatelessServiceType ServiceTypeName="HelloWorldServiceType" />
+  </ServiceTypes>
+  <CodePackage Name="Code" Version="1.0.0">
+    <EntryPoint>
+      <ExeHost>
+        <Program>entryPoint.sh</Program>
+      </ExeHost>
+    </EntryPoint>
+  </CodePackage>
+  <ConfigPackage Name="Config" Version="1.0.0" />
+  <DataPackage Name="Data" Version="1.0.0" />
+ </ServiceManifest>

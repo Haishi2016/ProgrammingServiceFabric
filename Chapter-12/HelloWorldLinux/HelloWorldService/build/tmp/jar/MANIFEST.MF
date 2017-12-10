@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Main-Class: statelessservice.HelloWorldServiceServiceHost
+Class-Path: lib/sf-actors-1.0.0-preview1.jar lib/sf-services-1.0.0-pre
+ view1.jar lib/sf-transport-1.0.0-preview1.jar lib/gson-2.7.jar lib/as
+ m-commons-5.0.4.jar lib/asm-5.0.4.jar lib/asm-util-5.0.4.jar lib/sf-1
+ .0.0-preview1.jar lib/asm-tree-5.0.4.jar lib/sf-native-1.0.0-preview1
+ .jar
+

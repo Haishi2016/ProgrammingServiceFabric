@@ -1,0 +1,67 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+  main {
+     java.srcDirs = ['src']
+     output.classesDir = 'out/classes'
+      resources {
+       srcDirs = ['src']
+     }
+   }
+}
+
+clean.doFirst {
+    delete "${projectDir}/lib"
+    delete "${projectDir}/out"
+    delete "${projectDir}/../HelloWorldLinuxApplication/HelloWorldServicePkg/Code/lib"
+    delete "${projectDir}/../HelloWorldLinuxApplication/HelloWorldServicePkg/Code/HelloWorldService.jar"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    azuresf
+}
+
+dependencies {
+    azuresf ('com.microsoft.servicefabric:sf-actors:1.0.0-preview1')   
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+task explodeDeps(type: Copy, dependsOn:configurations.azuresf) { task ->
+    configurations.azuresf.filter { it.toString().contains("native") }.each{
+        from zipTree(it)
+    }
+    configurations.azuresf.filter { !it.toString().contains("native") }.each {
+        from it
+    }
+    into "lib"
+    include "lib*.so", "*.jar"
+}
+
+jar {
+    manifest {
+    def mpath = configurations.azuresf.collect {'lib/'+it.getName()}.join (' ')
+    attributes(
+        'Main-Class': 'statelessservice.HelloWorldServiceServiceHost',
+        "Class-Path": mpath)
+    baseName "HelloWorldService"
+
+    destinationDir = file('../HelloWorldLinuxApplication/HelloWorldServicePkg/Code/')
+    }
+}
+
+compileJava.dependsOn(explodeDeps)
+
+task copyDeps<< {
+    copy {
+        from("lib/")
+        into("../HelloWorldLinuxApplication/HelloWorldServicePkg/Code/lib")
+        include('*')
+    }
+}
+
+defaultTasks 'clean', 'jar', 'copyDeps'

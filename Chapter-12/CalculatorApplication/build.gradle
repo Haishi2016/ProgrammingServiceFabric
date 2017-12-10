@@ -1,0 +1,42 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+subprojects {
+    apply plugin: 'java'
+} 
+allprojects {
+  task hello << { task -> println "I'm $task.project.name" }
+}
+    task runDefaultTasks {
+        subprojects.each { subproject ->subproject.defaultTasks.each {
+                        dependsOn subproject.path+":"+it
+                }
+        }
+      } 
+
+    task clusterconnect(type:Exec){
+       if ( project.hasProperty("ip") && project.hasProperty("port") && project.hasProperty("clientKey") && project.hasProperty("clientCert")) {
+            commandLine '/bin/bash','Scripts/connect.sh', '-ip', Eval.me(ip), '-port', Eval.me(port), '-clientKey', Eval.me(clientKey), '-clientCert', Eval.me(clientCert) 
+       } else if (project.hasProperty("ip") && project.hasProperty("port")) {
+            commandLine '/bin/bash','Scripts/connect.sh', '-ip', Eval.me(ip), '-port', Eval.me(port)
+       } else {
+            commandLine '/bin/bash', 'Scripts/connect.sh'
+       }
+    }
+
+    task launch(type:Exec) {
+    	def applicationTypeVersion ="1.0.0";
+    	if ( project.hasProperty("ApplicationTypeVersion"))
+    		applicationTypeVersion = Eval.me(ApplicationTypeVersion);
+        if (project.hasProperty("config") && Eval.me(config)=='deploy' ) {
+         commandLine '/bin/bash','Scripts/deploy.sh', applicationTypeVersion
+        }
+        else if ( project.hasProperty("config") && Eval.me(config)=='undeploy' ) {
+          commandLine '/bin/bash','Scripts/uninstall.sh', applicationTypeVersion
+        }
+        else if (project.hasProperty("config") && Eval.me(config)=='upgrade'){
+          commandLine '/bin/bash','Scripts/upgrade.sh', applicationTypeVersion
+        }              
+    }
+    
+defaultTasks 'clean', 'jar', 'copyDeps'
