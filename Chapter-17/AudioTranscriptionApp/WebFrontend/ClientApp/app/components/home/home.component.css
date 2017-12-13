@@ -1,0 +1,6 @@
+﻿.button-hover {
+    display:none;
+}
+tr:hover .button-hover {
+    display:block;
+}

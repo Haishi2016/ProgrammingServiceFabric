@@ -17,5 +17,7 @@ namespace StateAggregator.Interfaces
         Task ReportCompletion(string name, string url);
         [OperationContract]
         Task<List<JobStatus>> ListJobs();
+        [OperationContract]
+        Task ReportCancellation(string url);
     }
 }

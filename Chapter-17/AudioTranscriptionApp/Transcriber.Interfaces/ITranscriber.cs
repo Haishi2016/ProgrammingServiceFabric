@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Remoting.FabricTransport;
 using Microsoft.ServiceFabric.Services.Remoting;
+using StateAggregator.Interfaces;
 
 [assembly: FabricTransportActorRemotingProvider(RemotingListener = RemotingListener.V2Listener, RemotingClient = RemotingClient.V2Client)]
 namespace Transcriber.Interfaces
@@ -16,6 +17,7 @@ namespace Transcriber.Interfaces
     /// </summary>
     public interface ITranscriber : IActor
     {
-        Task SubmitJob(string url, bool isPublic, CancellationToken cancellationToken);
+        Task SubmitJob(string url);
+        Task DeleteJob(string job);
     }
 }

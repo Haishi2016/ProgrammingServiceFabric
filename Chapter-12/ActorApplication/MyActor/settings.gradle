@@ -1,0 +1,3 @@
+include ':MyActorInterface'
+
+project(':MyActorInterface').projectDir = new File(settingsDir, '../MyActorInterface')

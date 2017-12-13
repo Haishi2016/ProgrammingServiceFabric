@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ApplicationManifest
+    ApplicationTypeName="ActorApplicationApplicationType"
+    ApplicationTypeVersion="1.0.0"
+    xmlns="http://schemas.microsoft.com/2011/01/fabric"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Description>Reliable actor service.</Description>
+    <ServiceManifestImport>
+        <ServiceManifestRef ServiceManifestName="MyActorPkg" ServiceManifestVersion="1.0.0"/>
+    </ServiceManifestImport>
+    <DefaultServices>
+      <Service Name="MyActorActorService">        
+         <StatefulService ServiceTypeName="MyActorActorServiceType" TargetReplicaSetSize="3" MinReplicaSetSize="3">
+            <UniformInt64Partition PartitionCount="1" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+         </StatefulService>
+      </Service>     
+   </DefaultServices>   
+</ApplicationManifest>

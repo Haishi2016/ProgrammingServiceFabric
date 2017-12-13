@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ApplicationManifest
+  ApplicationTypeName="GuestPythonApplicationApplicationType"
+  ApplicationTypeVersion="1.0.0"
+  xmlns="http://schemas.microsoft.com/2011/01/fabric"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  >
+  <Description>GuestPythonApplication Application</Description>
+  <Parameters>
+  	<Parameter Name="FlaskWebServer_InstanceCount" DefaultValue="1" />
+  </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="FlaskWebServerPkg" ServiceManifestVersion="1.0.0"/>
+  </ServiceManifestImport>
+  <DefaultServices>
+      <Service Name="FlaskWebServer">
+         <StatelessService ServiceTypeName="FlaskWebServerType" InstanceCount="[FlaskWebServer_InstanceCount]">
+            <SingletonPartition />
+         </StatelessService>
+      </Service>      
+   </DefaultServices>      
+</ApplicationManifest>

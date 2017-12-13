@@ -28,7 +28,7 @@ export default createServerRenderer(params => {
                 // completing the request in case there's an error to report
                 setImmediate(() => {
                     resolve({
-                        html: state.renderToString()
+                        html: state.renderToString()                        
                     });
                     moduleRef.destroy();
                 });

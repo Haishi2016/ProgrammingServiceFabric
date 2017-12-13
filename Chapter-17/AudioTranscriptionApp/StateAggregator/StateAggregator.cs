@@ -46,14 +46,23 @@ namespace StateAggregator
                     new JobStatus { Name = name, Url = url },
                     (key, val) => {
                         val.Url = url;
-                        val.Message = "Done";
+                        val.Message = "";
                         val.Percent = 100;
+                        val.EndDate = DateTime.UtcNow;
                         return val;
                     });
                 await tx.CommitAsync();
             }
         }
-
+        public async Task ReportCancellation(string name)
+        {
+            var myDictionary = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, JobStatus>>("myDictionary");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                await myDictionary.TryRemoveAsync(tx, name);
+                await tx.CommitAsync();
+            }
+        }
         public async Task ReportProgress(string name, int percent, string message)
         {
             var myDictionary = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, JobStatus>>("myDictionary");
@@ -64,11 +73,13 @@ namespace StateAggregator
                         Name = name,
                         Message = message,
                         Percent = percent,
+                        EndDate = DateTime.UtcNow,
                         Date = DateTime.UtcNow
                     },
                     (key, val) => {
                         val.Percent = percent;
-                        val.Message = message;
+                        if (!string.IsNullOrEmpty(message))
+                            val.Message = message;
                         return val;
                     });
                 await tx.CommitAsync();

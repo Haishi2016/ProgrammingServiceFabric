@@ -4,9 +4,9 @@
     <div class="jumbotron">
         <div>
             <div>Upload a .mp3 or .wav file from your computer</div>
-            <input type="file" (change)="fileChangeEvent($event)" placeholder="Upload audio file..." />
+            <input type="file" (change)="fileChangeEvent($event)" placeholder="Upload audio file..." accept=".wav, .mp3" />
             <br/>
-            <button class="btn btn-info" *ngIf="!uploading" (click)="submitFileJob()">Upload</button>
+            <button class="btn btn-info" (click)="submitFileJob()" [disabled]="uploading || !hasFile">Upload</button>
             <img *ngIf="uploading" src="../job/loading.gif" width="32" height="32" />
            <!-- <span *ngIf="uploadProgress > 0 && uploadProgress < 100">
                 {{uploadProgress}}%
@@ -21,4 +21,27 @@
         </div>
         -->
     </div>
+    <table class='table table-hover' *ngIf="jobs">
+        <thead>
+            <tr>
+                <th width="80px" style="align-content:center"></th>
+                <th>Name</th>
+                <th>Transcript</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let job of jobs">
+                <td><button class="btn btn-danger button-hover btn-xs" (click)="deleteJob(job)">Delete</button></td>
+                <td><b>{{ job.name }}</b></td>
+                <td width="300px">
+                    <span *ngIf="job.url" style="text-wrap:none"><a href="{{ job.url }}" target="_blank">Transcript</a></span>
+                    <span *ngIf="job.percent >= 0 && job.percent < 100"><progress max="100" value="{{ job.percent }}"></progress></span>
+                </td>
+                <td><b>{{ job.date | date:'medium' }}</b></td>
+                <td><b *ngIf="job.endDate > job.date">{{ job.endDate | date:'medium' }}</b></td>                
+            </tr>
+        </tbody>
+    </table>
 </div>

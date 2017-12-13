@@ -57,9 +57,16 @@ namespace WebFrontend.Controllers
             {
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.Name);
                 await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
-                ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(Guid.NewGuid()), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
-                proxy.SubmitJob(file.Name, false, new System.Threading.CancellationToken());
+                ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(file.Name), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
+                proxy.SubmitJob(file.Name);
             }        
+            return Ok();
+        }
+        [HttpDelete("[action]")]
+        public async Task<IActionResult> DeleteJob(string name)
+        {
+            ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(name), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
+            await proxy.DeleteJob(name);
             return Ok();
         }
     }

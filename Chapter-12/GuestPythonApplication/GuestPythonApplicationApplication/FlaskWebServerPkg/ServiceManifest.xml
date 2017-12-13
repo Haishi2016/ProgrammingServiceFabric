@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ServiceManifest Name="FlaskWebServerPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Description>Service that implements a FlaskWebServer service</Description>
+  <ServiceTypes>
+    <StatelessServiceType ServiceTypeName="FlaskWebServerType" UseImplicitHost="true"/>
+  </ServiceTypes>
+  <CodePackage Name="Code" Version="1.0.0">       
+    <EntryPoint>
+      <ExeHost>
+        <Program>launch.sh</Program>
+        <Arguments />
+        <WorkingFolder>CodePackage</WorkingFolder>
+      </ExeHost>
+    </EntryPoint>
+    <EnvironmentVariables></EnvironmentVariables>
+  </CodePackage>
+  <ConfigPackage Name="Config" Version="1.0.0" />
+  <DataPackage Name="Data" Version="1.0.0" />
+  <Resources>
+      <Endpoints>
+          <Endpoint Name="ServiceEndpoint" Protocol="http" Port="8183" Type="Input"/>
+      </Endpoints>
+  </Resources>
+ </ServiceManifest>

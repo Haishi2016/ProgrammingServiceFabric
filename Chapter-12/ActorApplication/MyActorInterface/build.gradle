@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+  main {
+     java.srcDirs = ['src']
+     output.classesDir = 'out/classes'
+      resources {
+       srcDirs = ['src']
+     }
+   }
+}
+
+clean.doFirst {
+    delete "${projectDir}/lib"
+    delete "${projectDir}/out"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    azuresf
+}
+
+dependencies {
+    azuresf ('com.microsoft.servicefabric:sf-actors:1.0.0-preview1')   
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+task explodeDeps(type: Copy, dependsOn:configurations.azuresf) { task ->
+    configurations.azuresf.filter { it.toString().contains("native") }.each{
+        from zipTree(it)
+    }
+    configurations.azuresf.filter { !it.toString().contains("native") }.each {
+        from it
+    }
+    into "lib"
+    include "lib*.so", "*.jar"
+}
+
+compileJava.dependsOn(explodeDeps)
+
+jar {
+    baseName 'MyActor-interface'
+    destinationDir = file('out/lib')
+}
+
+defaultTasks 'clean', 'jar'

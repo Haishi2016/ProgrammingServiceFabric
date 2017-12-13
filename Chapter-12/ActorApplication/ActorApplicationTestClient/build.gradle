@@ -1,0 +1,82 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+  main {
+    java.srcDirs = ['src']
+    output.classesDir = 'out/classes'
+    resources {
+        srcDirs = ['src']
+    }
+   }
+}
+
+clean.doFirst {
+    delete "${projectDir}/out"
+    delete "${projectDir}/lib"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    azuresf
+}
+
+dependencies {
+    compile project (':MyActorInterface')
+    azuresf ('com.microsoft.servicefabric:sf-actors:1.0.0-preview1')
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+task explodeDeps(type: Copy, dependsOn:configurations.azuresf) { task ->
+    configurations.azuresf.filter { it.toString().contains("native") }.each{
+        from zipTree(it)
+    }
+    configurations.azuresf.filter { !it.toString().contains("native") }.each {
+        from it
+    }
+    into "lib"
+    include "lib*.so", "*.jar"
+}
+
+compileJava.dependsOn(explodeDeps)
+
+jar 
+{
+    manifest {
+    	def mpath = configurations.compile.collect {'lib/'+it.getName()}.join (' ')
+    	mpath = mpath + ' ' + configurations.azuresf.collect {'lib/'+it.getName()}.join (' ')
+   		attributes(
+        	'Main-Class': 'reliableactor.test.ActorApplicationTestClient',
+        	"Class-Path": mpath)
+    	baseName "ActorApplication-test"
+    	destinationDir = file('./out/lib')
+    }
+}
+
+task copyDeps<< {
+        copy {
+                from("lib/")
+                into("./out/lib/lib")
+                include('*')
+        }
+        copy {
+                from("../MyActorInterface/out/lib")
+                into("./out/lib/lib")
+                include('*.jar')
+        }
+}
+
+   task tester(type:Exec){
+        commandLine '/bin/bash','testclient.sh'
+    
+   } 
+   task testerloop()<<{
+       
+           (1..9).each{
+               tasks.tester.exec()
+               }    
+     }      
+defaultTasks 'clean', 'jar', 'copyDeps','testerloop'
