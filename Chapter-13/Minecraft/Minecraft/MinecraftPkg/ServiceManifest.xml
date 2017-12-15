@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest Name="MinecraftPkg" Version="1.0.0"
+                 xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+   <ServiceTypes>
+      <StatelessServiceType ServiceTypeName="MinecraftType" UseImplicitHost="true">
+   </StatelessServiceType>
+   </ServiceTypes>
+   
+   <CodePackage Name="code" Version="1.0.0">
+      <EntryPoint>
+         <ContainerHost>
+            <ImageName>itzg/minecraft-server</ImageName>
+            <Commands></Commands>
+         </ContainerHost>
+      </EntryPoint>
+      <EnvironmentVariables> 
+	<EnvironmentVariable Name="EULA" Value="TRUE" />
+	<EnvironmentVariable Name="MODE" Value="creative" />
+      </EnvironmentVariables> 
+   </CodePackage>
+   <Resources>
+	<Endpoints>
+	    <Endpoint Name="MinecraftEndpoint" Port="25565" Protocl="tcp" />
+	</Endpoints>
+   </Resources>
+ </ServiceManifest>
