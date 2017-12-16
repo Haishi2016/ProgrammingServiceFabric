@@ -8,6 +8,12 @@
    </ServiceTypes>
    
    <CodePackage Name="code" Version="1.0.0">
+      <SetupEntryPoint>
+         <ExeHost>
+            <Program>installdriver.sh</Program>
+	    <WorkingFolder>CodePackage</WorkingFolder>
+	 </ExeHost>
+      </SetupEntryPoint>
       <EntryPoint>
          <ContainerHost>
             <ImageName>itzg/minecraft-server</ImageName>
