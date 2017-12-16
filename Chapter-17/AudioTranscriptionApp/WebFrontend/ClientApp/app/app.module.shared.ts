@@ -5,15 +5,14 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './components/app/app.component';
-import { NavMenuComponent } from './components/navmenu/navmenu.component';
+//import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { InsightComponent } from './components/insight/insight.component';
 import { JobComponent } from './components/job/job.component';
 
 @NgModule({
     declarations: [
-        AppComponent,
-        NavMenuComponent,
+        AppComponent,        
         JobComponent,
         InsightComponent,
         HomeComponent

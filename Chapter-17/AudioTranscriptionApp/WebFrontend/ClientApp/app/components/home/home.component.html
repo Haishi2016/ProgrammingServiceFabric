@@ -1,12 +1,16 @@
-<h1>Audio Transcription</h1>
-<p>Transcribe your audio clips into text files.</p>
 <div class="container">
+    <h1>Audio Transcription</h1>
+    <span class="glyphicon glyphicon glyphicon-user">
+        <span class="label label-info">{{userName}}</span>
+    </span>
+    <p>Transcribe your audio clips into text files.</p>
+    <br/>
     <div class="jumbotron">
         <div>
-            <div>Upload a .mp3 or .wav file from your computer</div>
-            <input type="file" (change)="fileChangeEvent($event)" placeholder="Upload audio file..." accept=".wav, .mp3" />
+            <div>Upload a .mp3 or .wav file from your computer:</div>
+            <input type="file" size="100" (change)="fileChangeEvent($event)" placeholder="Upload audio file..." accept=".wav, .mp3" />
             <br/>
-            <button class="btn btn-info" (click)="submitFileJob()" [disabled]="uploading || !hasFile">Upload</button>
+            <!--<button class="btn btn-info" (click)="submitFileJob()" [disabled]="uploading || !hasFile">Upload</button>-->
             <img *ngIf="uploading" src="../job/loading.gif" width="32" height="32" />
            <!-- <span *ngIf="uploadProgress > 0 && uploadProgress < 100">
                 {{uploadProgress}}%

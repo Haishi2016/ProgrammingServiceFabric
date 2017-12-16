@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit {
     private mRouter: Router;
     public hasFile: Boolean;
     public jobs: Job[];
+    public userName = "";
     //private mTimer: any;
 
     constructor(http: Http, router: Router, @Inject('BASE_URL') baseUrl: string) {
@@ -54,6 +55,7 @@ export class HomeComponent implements OnInit {
     public fileChangeEvent(fileInput: any) {
         this.hasFile = true;
         this.filesToHandle = <Array<File>>fileInput.target.files;
+        this.submitFileJob();
     }
     public refreshPage() {
         this.mHttp.get(this.mBaseUrl + 'api/Job/Jobs').subscribe(result => {
@@ -63,6 +65,9 @@ export class HomeComponent implements OnInit {
     }
     
     ngOnInit() {        
+        this.mHttp.get(this.mBaseUrl + 'api/Job/GetUserName').subscribe(result => {
+            this.userName = result.text();
+        }, error => console.error(error));
             this.refreshPage();        
     }
     public deleteJob(job:Job) {

@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  docker-helloworld-windows:
+    image: docker-helloworld-windows
+    build:
+      context: ./Docker-HelloWorld-Windows
+      dockerfile: Dockerfile

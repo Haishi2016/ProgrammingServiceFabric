@@ -30,6 +30,7 @@ namespace Transcriber
         private readonly TimeSpan mReportInterval = TimeSpan.FromMilliseconds(500);
         private CancellationTokenSource mTokensource;
         private CancellationToken mToken;
+        private int[] percentages;
         public Transcriber(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
         {
@@ -67,21 +68,133 @@ namespace Transcriber
                 {
                     var tasks = new ConcurrentBag<Task<Tuple<string, string>>>();
                     var fileResults = files.Result;
+                    percentages = new int[fileResults.Count()];
                     for (int i = 0; i < fileResults.Count(); i++)
                     {
-                        tasks.Add(transcribeAudioSegement(url, fileResults[0], totalTime, mToken));
+                        tasks.Add(transcribeAudioSegement(i, url, fileResults[i], totalTime, mToken));
                     }
                     return Task.WhenAll<Tuple<string, string>>(tasks).Result;
                 }, mToken)
                 .ContinueWith((results) =>
                 {
-                    var detectionResult = results.Result[0];
+                    var sorted = (from a in results.Result
+                                  orderby a.Item1
+                                  select a).ToList();
+                    string text = "";
+                    for (int i = 0; i < sorted.Count; i++)
+                        text = mergeStrings(text, sorted[i].Item2, 50);                    
                     var fileName = url; // detectionResult.Item1;
-                    var text = detectionResult.Item2;
                     return uploadTranscript(fileName, text);
                 }, mToken);
             });
         }
+
+        private double stringDistance(string a, string b)
+        {
+            string wa = a.ToUpper().Trim();
+            string wb = b.ToUpper().Trim();
+            if (wa.Length == 0 && wb.Length == 0)
+                return 0;
+            double distance = 0;
+            for (int i = 0; i < Math.Min(wa.Length, wb.Length); i++)
+                distance += Math.Abs(wa[i] - wb[i]);
+            for (int i = Math.Min(wa.Length, wb.Length); i < Math.Max(wa.Length, wb.Length); i++)
+                distance += 26;
+            return distance / (Math.Max(wa.Length, wb.Length) * 26);
+        }
+        private string mergeStrings(string a, string b, int windowSize)
+        {
+            string[] arrayA = a.Replace('.', ' ').Replace(',', ' ').Split(' ');
+            string[] arrayB = b.Replace('.', ' ').Replace(',', ' ').Split(' ');
+            int matchSize = Math.Min(arrayB.Length, Math.Min(arrayA.Length, windowSize));
+            List<string> listB = arrayB.Take(matchSize).ToList();
+            int aIndex = arrayA.Length - matchSize;
+            int[] bestDistance = new int[matchSize];
+            for (int permu = 0; permu < matchSize; permu++)
+            {
+                int matchCount = 0;
+                for (int i = 0; i < matchSize; i++)
+                {
+                    if (stringDistance(arrayA[aIndex + i], listB[i]) < 0.1)
+                        matchCount++;
+                }
+                string first = listB[0];
+                listB.RemoveAt(0);
+                listB.Add(first);
+                bestDistance[permu] = matchCount;
+            }
+
+            int bestIndex = -1;
+            int bestCount = 0;
+            for (int i = 0; i < matchSize; i++)
+            {
+                if (bestDistance[i] > bestCount)
+                {
+                    bestCount = bestDistance[i];
+                    bestIndex = i;
+                }
+            }
+            if (bestIndex < 0)
+                return (a + " " + b).Replace("  ", " ").Trim();
+            else
+            {
+                listB = arrayB.Take(matchSize).ToList();
+
+                for (int i = 0; i < bestIndex; i++)
+                {
+                    string first = listB[0];
+                    listB.RemoveAt(0);
+                    listB.Add(first);
+                }
+                int lastIndex = -1;
+                List<Tuple<int, int>> longestMatches = new List<Tuple<int, int>>();
+                bool inList = false;
+                for (int i = 0; i < matchSize; i++)
+                {
+                    if (stringDistance(arrayA[aIndex + i], listB[i]) <= 0.1)
+                    {
+                        if (!inList)
+                        {
+                            inList = true;
+                            longestMatches.Add(new Tuple<int, int>(i, -1));
+                        }
+                    }
+                    else
+                    {
+                        if (inList)
+                        {
+                            inList = false;
+                            longestMatches[longestMatches.Count - 1] = new Tuple<int, int>(longestMatches[longestMatches.Count - 1].Item1, i);
+                        }
+                    }
+                }
+                int maxLength = 0;
+                for (int i = 0; i < longestMatches.Count; i++)
+                {
+                    if (longestMatches[i].Item2 - longestMatches[i].Item1 > maxLength)
+                    {
+                        lastIndex = longestMatches[i].Item1;
+                        maxLength = longestMatches[i].Item2 - longestMatches[i].Item1;
+                    }
+                }
+                if (lastIndex < 0)
+                    return (a + " " + b).Replace("  ", " ").Trim();
+                else
+                {
+                    int lengthA = 0, lengthB = 0;
+                    for (int i = lastIndex; i < matchSize; i++)
+                        lengthA += arrayA[aIndex + i].Length + 1;
+                    if (lengthA > 0)
+                        lengthA--;
+                    for (int i = 0; i < (lastIndex + bestIndex) % matchSize; i++)
+                        lengthB += arrayB[i].Length + 1;
+                    if (lengthB > 0)
+                        lengthB--;
+                    return (a.Substring(0, a.Length - lengthA) + " " + b.Substring(lengthB)).Replace("  ", " ").Trim();
+                }
+            }
+        }
+
         public async Task DeleteJob(string name)
         {
             mTokensource.Cancel();
@@ -137,9 +250,38 @@ namespace Transcriber
            
             return await Task.FromResult<Tuple<string,TimeSpan>>(new Tuple<string, TimeSpan>(outFile, totalTime));
         }
-        private async Task<List<string>> splitFiles(string file)
+        private  Task<List<string>> splitFiles(string file)
         {
-            return await Task.FromResult<List<string>>(new List<string> { file });
+            List<string> outputFiles = new List<string>();
+            int chunkSizeinSeconds = 600;
+            int overlapInSeconds = 5;
+            string outputFilePattern = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)) + "{0}.wav";
+            using (WaveFileReader reader = new WaveFileReader(file))
+            {
+                int bufferSize = reader.WaveFormat.AverageBytesPerSecond;
+                byte[] buffer = new byte[bufferSize];
+                int bytesRead = 0;
+                int fileCount = 1;
+                string fileName = string.Format(outputFilePattern, fileCount);
+                WaveFileWriter writer = null;
+                while ((bytesRead = reader.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    if (writer == null)
+                        writer = new WaveFileWriter(string.Format(outputFilePattern, fileCount), reader.WaveFormat);
+                    writer.Write(buffer, 0, bytesRead);
+                    if (reader.Position >= reader.Length - 1 || reader.Position >= chunkSizeinSeconds * bufferSize * fileCount)
+                    {
+                        outputFiles.Add(string.Format(outputFilePattern, fileCount));
+                        writer.Close();
+                        writer.Dispose();
+                        writer = null;
+                        fileCount++;
+                        if (reader.Position < reader.Length)
+                            reader.Position -= bufferSize * overlapInSeconds;
+                    }
+                }
+            }
+            return Task.FromResult<List<string>>(outputFiles);
         }
         private async Task<string> getAudioFileFromBlob(string tempFolder, string url, CancellationToken token)
         {
@@ -167,7 +309,7 @@ namespace Transcriber
             if (blockBlob.Exists())
                 await blockBlob.DeleteAsync();
         }
-        private Task<Tuple<string,string>> transcribeAudioSegement(string fileName, string audioFile, TimeSpan totalTime, CancellationToken token)
+        private Task<Tuple<string,string>> transcribeAudioSegement(int index, string fileName, string audioFile, TimeSpan totalTime, CancellationToken token)
         {
             return Task.Factory.StartNew<Tuple<string,string>>(() =>
             {
@@ -184,7 +326,8 @@ namespace Transcriber
                             if (DateTime.Now - lastReportTime >= mReportInterval)
                             {
                                 var percent = (int)(args.MediaTime * 0.00001 / totalTime.TotalSeconds);
-                                reportProgress(fileName, percent, args.DisplayText.Substring(0, Math.Min(args.DisplayText.Length, 50)) + "...").Wait();
+                                percentages[index] = percent;
+                                reportProgress(fileName, Math.Min(99, percentages.Sum()), args.DisplayText.Substring(0, Math.Min(args.DisplayText.Length, 50)) + "...").Wait();
                                 lastReportTime = DateTime.Now;
                             }
                         });
