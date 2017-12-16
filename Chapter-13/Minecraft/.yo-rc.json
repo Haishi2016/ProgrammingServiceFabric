@@ -1,0 +1,8 @@
+{
+  "generator-azuresfguest": {
+    "projName": "test4"
+  },
+  "generator-azuresfcontainer": {
+    "projName": "Minecraft"
+  }
+}
