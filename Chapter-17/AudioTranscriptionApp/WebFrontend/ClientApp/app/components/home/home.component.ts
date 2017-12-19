@@ -58,6 +58,10 @@ export class HomeComponent implements OnInit {
         this.submitFileJob();
     }
     public refreshPage() {
+        this.mHttp.get(this.mBaseUrl + 'api/Job/GetUserName').subscribe(result => {
+            if (result.text())
+                this.userName = result.text();
+        }, error => console.error(error));
         this.mHttp.get(this.mBaseUrl + 'api/Job/Jobs').subscribe(result => {
             this.jobs = result.json() as Job[];
         }, error => console.error(error));

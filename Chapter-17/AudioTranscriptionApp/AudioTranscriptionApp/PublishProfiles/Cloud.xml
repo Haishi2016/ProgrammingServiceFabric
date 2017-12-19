@@ -20,6 +20,9 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="archibot.southcentralus.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="7EC151F22D217B670A732D9FD254A8C50E14C454" FindType="FindByThumbprint" FindValue="7EC151F22D217B670A732D9FD254A8C50E14C454" StoreLocation="CurrentUser" StoreName="My" />
+  <ClusterConnectionParameters ConnectionEndpoint="transcription.westus.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="6D384E0B5B25B4988D24A391CCA55720542DB2A2" FindType="FindByThumbprint" FindValue="6D384E0B5B25B4988D24A391CCA55720542DB2A2" StoreLocation="CurrentUser" StoreName="Root" />
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
+  <UpgradeDeployment Mode="Monitored" Enabled="false">
+    <Parameters FailureAction="Rollback" Force="True" />
+  </UpgradeDeployment>
 </PublishProfile>

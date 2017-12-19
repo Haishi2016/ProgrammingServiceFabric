@@ -20,6 +20,7 @@ using Microsoft.ServiceFabric.Services.Communication.Wcf.Client;
 using StateAggregator.Interfaces;
 using Microsoft.ServiceFabric.Services.Communication.Client;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
 namespace Transcriber
 {
@@ -315,6 +316,8 @@ namespace Transcriber
             {
                 var preferences = new Preferences("en-US", new Uri("wss://speech.platform.bing.com/api/service/recognition/continuous"), new CognitiveServicesAuthorizationProvider("68ecbfed77384b0badae81995a5b256b"));
                 DateTime lastReportTime = DateTime.Now;
+                DateTime lastDetectionTime = DateTime.Now;
+                int runonLength = 0;
                 StringBuilder text = new StringBuilder();
                 using (var speechClient = new SpeechClient(preferences))
                 {
@@ -337,9 +340,16 @@ namespace Transcriber
                         return Task.Factory.StartNew(() =>
                             {
                                 if (args.Phrases.Count > 0)
-                                {
+                                {                                                                        
                                     string bestText = args.Phrases[args.Phrases.Count - 1].DisplayText;
-                                    text.Append(bestText);
+                                    runonLength += bestText.Length;
+                                    if ((DateTime.Now - lastDetectionTime >= TimeSpan.FromSeconds(5) || runonLength >= 1800) && runonLength >= 250)
+                                    {
+                                        text.Append("\r\n\r\n    ");
+                                        runonLength = 0;
+                                    }
+                                    text.Append(Regex.Replace(bestText, "(?<=[\\.,?])(?![$ ])", " "));
+                                    lastDetectionTime = DateTime.Now;
                                 }
                             });
                     });

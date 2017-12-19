@@ -38,10 +38,14 @@ namespace WebFrontend
            {
                //Configuration.Bind("AzureAd", options)
                options.CallbackPath = "/dummy";
+               //options.Instance = "https://login.microsoftonline.com/";
+               //options.Domain = "londonorg.onmicrosoft.com";
+               //options.TenantId = "9f2792d0-7b20-4549-8bb2-129413404627";
+               //options.ClientId = "70f73b7d-f0b7-429c-b153-f1efb1fd595a";
                options.Instance = "https://login.microsoftonline.com/";
-               options.Domain = "londonorg.onmicrosoft.com";
-               options.TenantId = "9f2792d0-7b20-4549-8bb2-129413404627";
-               options.ClientId = "70f73b7d-f0b7-429c-b153-f1efb1fd595a";
+               options.Domain = "microsoft.com";
+               options.TenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
+               options.ClientId = "3fd82d20-6bd6-46c9-9f35-945c80be055b";
            }
            )
 

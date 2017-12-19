@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace WebFrontend
 {
@@ -42,7 +43,12 @@ namespace WebFrontend
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
 
                         return new WebHostBuilder()
-                                    .UseKestrel()
+                                    .UseKestrel(options=>{
+                                        options.Listen(IPAddress.Parse(listener.ServiceContext.NodeContext.IPAddressOrFQDN), 8080, listenOptions =>
+                                                {
+                                                    listenOptions.UseHttps("azure4fun.com.pfx", "ScottyR0cks!");
+                                                });
+                                    })
                                     .ConfigureServices(
                                         services => {
                                             services.AddSingleton<StatelessServiceContext>(serviceContext);
