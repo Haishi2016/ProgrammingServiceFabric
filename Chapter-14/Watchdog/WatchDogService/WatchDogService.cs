@@ -21,7 +21,7 @@ namespace WatchDogService
     /// </summary>
     internal sealed class WatchDogService : StatelessService
     {
-        private Uri applicationName = new Uri("fabric:/SidecardDemo");
+        private Uri applicationName = new Uri("fabric:/WatchDogApp");
         private string serviceManifestName = "WatchDogServicePkg";
         private string nodeName = FabricRuntime.GetNodeContext().NodeName;
         private FabricClient Client = new FabricClient(new FabricClientSettings() { HealthReportSendInterval = TimeSpan.FromSeconds(0) });
