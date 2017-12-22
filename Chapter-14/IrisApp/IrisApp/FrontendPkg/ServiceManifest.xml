@@ -15,7 +15,7 @@
          </ContainerHost>
       </EntryPoint>
       <EnvironmentVariables> 
-      </EnvironmentVariables> 
+	 </EnvironmentVariables> 
    </CodePackage>
    <Resources>
       <Endpoints>

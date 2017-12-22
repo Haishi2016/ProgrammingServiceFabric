@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest Name="GoWebPkg" Version="1.0.0"
+                 xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+   <ServiceTypes>
+      <StatelessServiceType ServiceTypeName="GoWebType" UseImplicitHost="true">
+   </StatelessServiceType>
+   </ServiceTypes>
+   
+   <CodePackage Name="code" Version="1.0.0">
+      <EntryPoint>
+         <ContainerHost>
+            <ImageName>hbai/sf-go:7</ImageName>
+            <Commands></Commands>
+         </ContainerHost>
+      </EntryPoint>
+      <EnvironmentVariables>
+	  <EnvironmentVariable Name="POSTGRES_HOST" Value="postgres.goapp" />
+      </EnvironmentVariables> 
+   </CodePackage>
+   <Resources>
+      <Endpoints>
+         <Endpoint Name="ServiceEndpoint" Port="8084" Protocol="http" />
+      </Endpoints>
+   </Resources>
+ </ServiceManifest>
