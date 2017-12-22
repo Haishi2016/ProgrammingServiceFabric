@@ -45,9 +45,9 @@ namespace Transcriber
             return this.StateManager.TryAddStateAsync("count", 0);
         }
 
-        public async Task SubmitJob(string url)
+        public async Task SubmitJob(string url, string user)
         {
-            await reportProgress(url, 0, "Job created.");
+            await reportProgress(url, 0, "Job created.", user);
 
             string tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             if (!Directory.Exists(tempFolder))
@@ -72,7 +72,7 @@ namespace Transcriber
                     percentages = new int[fileResults.Count()];
                     for (int i = 0; i < fileResults.Count(); i++)
                     {
-                        tasks.Add(transcribeAudioSegement(i, url, fileResults[i], totalTime, mToken));
+                        tasks.Add(transcribeAudioSegement(i, url, fileResults[i], totalTime, mToken, user));
                     }
                     return Task.WhenAll<Tuple<string, string>>(tasks).Result;
                 }, mToken)
@@ -85,7 +85,7 @@ namespace Transcriber
                     for (int i = 0; i < sorted.Count; i++)
                         text = mergeStrings(text, sorted[i].Item2, 50);                    
                     var fileName = url; // detectionResult.Item1;
-                    return uploadTranscript(fileName, text);
+                    return uploadTranscript(fileName, text, user);
                 }, mToken);
             });
         }
@@ -203,7 +203,7 @@ namespace Transcriber
             await deleteFiles(name);
 
         }
-        private static async Task reportProgress(string url, int percent, string message)
+        private static async Task reportProgress(string url, int percent, string message, string user)
         {
             Binding binding = WcfUtility.CreateTcpClientBinding();
             IServicePartitionResolver partitionResolver = ServicePartitionResolver.GetDefault();
@@ -214,7 +214,7 @@ namespace Transcriber
             var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
                 wcfClientFactory,
                 new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
-            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportProgress(url, percent, message));
+            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportProgress(url, percent, message, user));
         }
         private static async Task reportCancellation(string url)
         {
@@ -310,7 +310,7 @@ namespace Transcriber
             if (blockBlob.Exists())
                 await blockBlob.DeleteAsync();
         }
-        private Task<Tuple<string,string>> transcribeAudioSegement(int index, string fileName, string audioFile, TimeSpan totalTime, CancellationToken token)
+        private Task<Tuple<string,string>> transcribeAudioSegement(int index, string fileName, string audioFile, TimeSpan totalTime, CancellationToken token, string user)
         {
             return Task.Factory.StartNew<Tuple<string,string>>(() =>
             {
@@ -330,7 +330,7 @@ namespace Transcriber
                             {
                                 var percent = (int)(args.MediaTime * 0.00001 / totalTime.TotalSeconds);
                                 percentages[index] = percent;
-                                reportProgress(fileName, Math.Min(99, percentages.Sum()), args.DisplayText.Substring(0, Math.Min(args.DisplayText.Length, 50)) + "...").Wait();
+                                reportProgress(fileName, Math.Min(99, percentages.Sum()), args.DisplayText.Substring(0, Math.Min(args.DisplayText.Length, 50)) + "...", user).Wait();
                                 lastReportTime = DateTime.Now;
                             }
                         });
@@ -365,7 +365,7 @@ namespace Transcriber
             });
         }
         
-        private async Task uploadTranscript(string fileName, string text)
+        private async Task uploadTranscript(string fileName, string text, string user)
         {
             string connectionString = "DefaultEndpointsProtocol=https;AccountName=transcriptions;AccountKey=5Aoic2oWz+n8jUP4tonlzoic9/rapEJPG0jDHHccTLEp2KfnkHusFTS9TWF6mzDBKPixlVQUZ4/QYlQu3wLSpw==;EndpointSuffix=core.windows.net";
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
@@ -387,7 +387,7 @@ namespace Transcriber
             var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
                 wcfClientFactory,
                 new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
-            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportCompletion(fileName, blockBlob.Uri.AbsoluteUri));
+            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportCompletion(fileName, blockBlob.Uri.AbsoluteUri, user));
         }
 
     }

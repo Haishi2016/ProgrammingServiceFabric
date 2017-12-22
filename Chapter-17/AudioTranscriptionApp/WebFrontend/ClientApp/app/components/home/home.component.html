@@ -33,6 +33,7 @@
                 <th>Transcript</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Submitter</th>
             </tr>
         </thead>
         <tbody>
@@ -45,6 +46,7 @@
                 </td>
                 <td><b>{{ job.date | date:'medium' }}</b></td>
                 <td><b *ngIf="job.endDate > job.date">{{ job.endDate | date:'medium' }}</b></td>                
+                <td>{{ job.submitter }}</td>
             </tr>
         </tbody>
     </table>

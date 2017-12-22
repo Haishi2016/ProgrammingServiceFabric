@@ -17,7 +17,7 @@ namespace Transcriber.Interfaces
     /// </summary>
     public interface ITranscriber : IActor
     {
-        Task SubmitJob(string url);
+        Task SubmitJob(string url, string user);
         Task DeleteJob(string job);
     }
 }

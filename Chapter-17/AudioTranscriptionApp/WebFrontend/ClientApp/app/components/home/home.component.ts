@@ -87,5 +87,6 @@ interface Job {
     message: string;
     date: Date;
     endDate: Date;
-    url: string
+    url: string;
+    submitter: string;
 }

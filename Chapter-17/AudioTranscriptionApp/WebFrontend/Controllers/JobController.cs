@@ -58,7 +58,7 @@ namespace WebFrontend.Controllers
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.Name);
                 await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
                 ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(file.Name), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
-                proxy.SubmitJob(file.Name);
+                proxy.SubmitJob(file.Name, GetUserName().Result);
             }        
             return Ok();
         }
