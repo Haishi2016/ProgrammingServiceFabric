@@ -10,5 +10,8 @@
     <Parameter Name="TranscriberActorService_PartitionCount" Value="1" />
     <Parameter Name="TranscriberActorService_TargetReplicaSetSize" Value="1" />
     <Parameter Name="TranscriberActorService_MinReplicaSetSize" Value="1" />
+    <Parameter Name="WordCounterActorService_PartitionCount" Value="1" />
+    <Parameter Name="WordCounterActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="WordCounterActorService_MinReplicaSetSize" Value="1" />
   </Parameters>
 </Application>

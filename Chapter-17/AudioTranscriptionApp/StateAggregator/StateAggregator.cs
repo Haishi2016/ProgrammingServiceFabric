@@ -29,7 +29,12 @@ namespace StateAggregator
                 using (var e = enumerable.GetAsyncEnumerator())
                 {
                     while (await e.MoveNextAsync(default(CancellationToken)).ConfigureAwait(false))
+                    {
+                        //var job = e.Current.Value;
+                        //if (job.Submitter.IndexOf("#") > 0)
+                        //    job.Submitter = job.Submitter.Substring(job.Submitter.IndexOf("#")+1).Trim();
                         ret.Add(e.Current.Value);
+                    }
                 }
                 await tx.CommitAsync();
 

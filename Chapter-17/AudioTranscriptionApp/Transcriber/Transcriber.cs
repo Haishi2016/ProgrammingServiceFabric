@@ -26,8 +26,7 @@ namespace Transcriber
 {
     [StatePersistence(StatePersistence.Persisted)]
     internal class Transcriber : Actor, ITranscriber
-    {
-        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+    {        
         private readonly TimeSpan mReportInterval = TimeSpan.FromMilliseconds(500);
         private CancellationTokenSource mTokensource;
         private CancellationToken mToken;
@@ -201,7 +200,9 @@ namespace Transcriber
             mTokensource.Cancel();
             await reportCancellation(name);
             await deleteFiles(name);
-
+            mTokensource.Dispose();
+            mTokensource = new CancellationTokenSource();
+            mToken = mTokensource.Token;
         }
         private static async Task reportProgress(string url, int percent, string message, string user)
         {
@@ -240,6 +241,19 @@ namespace Transcriber
                 using (Mp3FileReader reader = new Mp3FileReader(file))
                 {
                     WaveFileWriter.CreateWaveFile(outFile, reader);
+                }
+            } else if (file.ToLower().EndsWith(".m4a"))
+            {
+                outFile = fileWithouExtension + ".wav";
+                token.ThrowIfCancellationRequested();
+                using (MediaFoundationReader reader = new MediaFoundationReader(file))
+                {
+                    using (ResamplerDmoStream resampledReader = new ResamplerDmoStream(reader,
+                        new WaveFormat(reader.WaveFormat.SampleRate, reader.WaveFormat.BitsPerSample, reader.WaveFormat.Channels)))
+                    using (WaveFileWriter waveWriter = new WaveFileWriter(outFile, resampledReader.WaveFormat))
+                    {
+                        resampledReader.CopyTo(waveWriter);
+                    }
                 }
             }
             token.ThrowIfCancellationRequested();
@@ -315,6 +329,7 @@ namespace Transcriber
             return Task.Factory.StartNew<Tuple<string,string>>(() =>
             {
                 var preferences = new Preferences("en-US", new Uri("wss://speech.platform.bing.com/api/service/recognition/continuous"), new CognitiveServicesAuthorizationProvider("68ecbfed77384b0badae81995a5b256b"));
+                //var preferences = new Preferences("en-US", new Uri("wss://5ba5d066af03405ba71e84ba3bc4d185.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
                 DateTime lastReportTime = DateTime.Now;
                 DateTime lastDetectionTime = DateTime.Now;
                 int runonLength = 0;
@@ -358,7 +373,7 @@ namespace Transcriber
                         var deviceMetadata = new DeviceMetadata(DeviceType.Near, DeviceFamily.Desktop, NetworkType.Ethernet, OsName.Windows, "1607", "Dell", "T3600");
                         var applicationMetadata = new ApplicationMetadata("TranscriptionApp", "1.0.0");
                         var requestMetadata = new RequestMetadata(Guid.NewGuid(), deviceMetadata, applicationMetadata, "TranscriptionService");
-                        speechClient.RecognizeAsync(new SpeechInput(audio, requestMetadata), this.cts.Token).Wait();
+                        speechClient.RecognizeAsync(new SpeechInput(audio, requestMetadata), mTokensource.Token).Wait();
                         return new Tuple<string, string>(audioFile, text.ToString());
                     }
                 }

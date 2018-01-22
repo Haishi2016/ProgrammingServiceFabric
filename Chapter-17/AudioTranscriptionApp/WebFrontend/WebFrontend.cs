@@ -17,6 +17,7 @@ using System.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace WebFrontend
 {
@@ -44,10 +45,18 @@ namespace WebFrontend
 
                         return new WebHostBuilder()
                                     .UseKestrel(options=>{
-                                        options.Listen(IPAddress.Parse(listener.ServiceContext.NodeContext.IPAddressOrFQDN), 8080, listenOptions =>
+                                        //options.Listen(IPAddress.Parse(listener.ServiceContext.NodeContext.IPAddressOrFQDN), 8080, listenOptions =>
+                                        //        {
+                                        //            listenOptions.UseHttps("azure4fun.com.pfx", "ScottyR0cks!");
+                                        //       });
+                                        options.Listen(IPAddress.Any, 8080, listenOptions =>
                                                 {
-                                                    listenOptions.UseHttps("azure4fun.com.pfx", "ScottyR0cks!");
+                                                    //listenOptions.UseHttps("azure4fun.com.pfx", "ScottyR0cks!");
                                                 });
+                                    })
+                                    .ConfigureAppConfiguration((builderContext, config) =>
+                                    {
+                                        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                                     })
                                     .ConfigureServices(
                                         services => {

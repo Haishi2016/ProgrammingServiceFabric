@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Section Name="WordCounterActorServiceReplicatorConfig">
+    <Parameter Name="ReplicatorEndpoint" Value="WordCounterActorServiceReplicatorEndpoint" />
+    <Parameter Name="BatchAcknowledgementInterval" Value="0.005" />
+  </Section>
+  <Section Name="WordCounterActorServiceReplicatorSecurityConfig">
+    <Parameter Name="CredentialType" Value="None" />
+  </Section>
+  <Section Name="ActorSettings">
+    <Parameter Name="ClientId" Value="3fd82d20-6bd6-46c9-9f35-945c80be055b" />
+    <Parameter Name="ClientSecret" Value="caacFTXF829~picAFK78]{{" />
+    <Parameter Name="SecretUri" Value="https://transcription-vault.vault.azure.net/secrets/SQLConnectionString/31a0e96a60db4b268ce5467ba6340e64" />
+  </Section>
+  <!-- The content will be generated during build -->
+</Settings>

@@ -27,7 +27,10 @@ namespace WebFrontend.Controllers
         [HttpGet("[action]")]
         public async Task<string> GetUserName()
         {
-            return await Task.FromResult<string>(User.Identity != null ? User.Identity.Name:"");
+            string ret = User.Identity != null ? User.Identity.Name : "";
+            if (ret.IndexOf("#") > 0)
+                ret = ret.Substring(ret.IndexOf("#")+1).Trim();
+            return await Task.FromResult<string>(ret);
         }
         [HttpGet("[action]")]
         public async Task<IEnumerable<JobStatus>> Jobs()
@@ -57,7 +60,7 @@ namespace WebFrontend.Controllers
             {
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.Name);
                 await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
-                ITranscriber proxy = ActorProxy.Create<ITranscriber>(new ActorId(file.Name), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
+                ITranscriber proxy = ActorProxy.Create<ITranscriber>(ActorId.CreateRandom(), new Uri("fabric:/AudioTranscriptionApp/TranscriberActorService"));
                 proxy.SubmitJob(file.Name, GetUserName().Result);
             }        
             return Ok();

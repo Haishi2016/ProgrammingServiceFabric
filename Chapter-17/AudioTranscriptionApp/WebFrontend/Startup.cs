@@ -26,6 +26,8 @@ namespace WebFrontend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<AppSettings>(Configuration);
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -33,7 +35,6 @@ namespace WebFrontend
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 
             })
-
            .AddAzureAd(options =>
            {
                //Configuration.Bind("AzureAd", options)
@@ -46,11 +47,11 @@ namespace WebFrontend
                options.Domain = "microsoft.com";
                options.TenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
                options.ClientId = "3fd82d20-6bd6-46c9-9f35-945c80be055b";
+               //options.ClientId = "4b68cbf0-9911-43e5-963b-7ea7b04b5652";
            }
            )
 
            .AddCookie();
-
             services.AddMvc();
         }
 
@@ -58,7 +59,7 @@ namespace WebFrontend
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-
+            
             //if (env.IsDevelopment())
             //{
             //    app.UseDeveloperExceptionPage();

@@ -35,6 +35,7 @@
     <ProjectReference Include="..\StateAggregator\StateAggregator.csproj" />
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
     <ProjectReference Include="..\WebFrontend\WebFrontend.csproj" />
+    <ProjectReference Include="..\WordCounter\WordCounter.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup>
