@@ -20,13 +20,13 @@ using Microsoft.ServiceFabric.Services.Communication.Wcf.Client;
 using StateAggregator.Interfaces;
 using Microsoft.ServiceFabric.Services.Communication.Client;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
 namespace Transcriber
 {
     [StatePersistence(StatePersistence.Persisted)]
     internal class Transcriber : Actor, ITranscriber
-    {
-        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+    {        
         private readonly TimeSpan mReportInterval = TimeSpan.FromMilliseconds(500);
         private CancellationTokenSource mTokensource;
         private CancellationToken mToken;
@@ -44,9 +44,9 @@ namespace Transcriber
             return this.StateManager.TryAddStateAsync("count", 0);
         }
 
-        public async Task SubmitJob(string url)
+        public async Task SubmitJob(string url, string user)
         {
-            await reportProgress(url, 0, "Job created.");
+            await reportProgress(url, 0, "Job created.", user);
 
             string tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             if (!Directory.Exists(tempFolder))
@@ -71,7 +71,7 @@ namespace Transcriber
                     percentages = new int[fileResults.Count()];
                     for (int i = 0; i < fileResults.Count(); i++)
                     {
-                        tasks.Add(transcribeAudioSegement(i, url, fileResults[i], totalTime, mToken));
+                        tasks.Add(transcribeAudioSegement(i, url, fileResults[i], totalTime, mToken, user));
                     }
                     return Task.WhenAll<Tuple<string, string>>(tasks).Result;
                 }, mToken)
@@ -84,7 +84,7 @@ namespace Transcriber
                     for (int i = 0; i < sorted.Count; i++)
                         text = mergeStrings(text, sorted[i].Item2, 50);                    
                     var fileName = url; // detectionResult.Item1;
-                    return uploadTranscript(fileName, text);
+                    return uploadTranscript(fileName, text, user);
                 }, mToken);
             });
         }
@@ -200,9 +200,11 @@ namespace Transcriber
             mTokensource.Cancel();
             await reportCancellation(name);
             await deleteFiles(name);
-
+            mTokensource.Dispose();
+            mTokensource = new CancellationTokenSource();
+            mToken = mTokensource.Token;
         }
-        private static async Task reportProgress(string url, int percent, string message)
+        private static async Task reportProgress(string url, int percent, string message, string user)
         {
             Binding binding = WcfUtility.CreateTcpClientBinding();
             IServicePartitionResolver partitionResolver = ServicePartitionResolver.GetDefault();
@@ -213,7 +215,7 @@ namespace Transcriber
             var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
                 wcfClientFactory,
                 new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
-            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportProgress(url, percent, message));
+            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportProgress(url, percent, message, user));
         }
         private static async Task reportCancellation(string url)
         {
@@ -239,6 +241,19 @@ namespace Transcriber
                 using (Mp3FileReader reader = new Mp3FileReader(file))
                 {
                     WaveFileWriter.CreateWaveFile(outFile, reader);
+                }
+            } else if (file.ToLower().EndsWith(".m4a"))
+            {
+                outFile = fileWithouExtension + ".wav";
+                token.ThrowIfCancellationRequested();
+                using (MediaFoundationReader reader = new MediaFoundationReader(file))
+                {
+                    using (ResamplerDmoStream resampledReader = new ResamplerDmoStream(reader,
+                        new WaveFormat(reader.WaveFormat.SampleRate, reader.WaveFormat.BitsPerSample, reader.WaveFormat.Channels)))
+                    using (WaveFileWriter waveWriter = new WaveFileWriter(outFile, resampledReader.WaveFormat))
+                    {
+                        resampledReader.CopyTo(waveWriter);
+                    }
                 }
             }
             token.ThrowIfCancellationRequested();
@@ -309,12 +324,15 @@ namespace Transcriber
             if (blockBlob.Exists())
                 await blockBlob.DeleteAsync();
         }
-        private Task<Tuple<string,string>> transcribeAudioSegement(int index, string fileName, string audioFile, TimeSpan totalTime, CancellationToken token)
+        private Task<Tuple<string,string>> transcribeAudioSegement(int index, string fileName, string audioFile, TimeSpan totalTime, CancellationToken token, string user)
         {
             return Task.Factory.StartNew<Tuple<string,string>>(() =>
             {
                 var preferences = new Preferences("en-US", new Uri("wss://speech.platform.bing.com/api/service/recognition/continuous"), new CognitiveServicesAuthorizationProvider("68ecbfed77384b0badae81995a5b256b"));
+                //var preferences = new Preferences("en-US", new Uri("wss://5ba5d066af03405ba71e84ba3bc4d185.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
                 DateTime lastReportTime = DateTime.Now;
+                DateTime lastDetectionTime = DateTime.Now;
+                int runonLength = 0;
                 StringBuilder text = new StringBuilder();
                 using (var speechClient = new SpeechClient(preferences))
                 {
@@ -327,7 +345,7 @@ namespace Transcriber
                             {
                                 var percent = (int)(args.MediaTime * 0.00001 / totalTime.TotalSeconds);
                                 percentages[index] = percent;
-                                reportProgress(fileName, Math.Min(99, percentages.Sum()), args.DisplayText.Substring(0, Math.Min(args.DisplayText.Length, 50)) + "...").Wait();
+                                reportProgress(fileName, Math.Min(99, percentages.Sum()), args.DisplayText.Substring(0, Math.Min(args.DisplayText.Length, 50)) + "...", user).Wait();
                                 lastReportTime = DateTime.Now;
                             }
                         });
@@ -337,9 +355,16 @@ namespace Transcriber
                         return Task.Factory.StartNew(() =>
                             {
                                 if (args.Phrases.Count > 0)
-                                {
+                                {                                                                        
                                     string bestText = args.Phrases[args.Phrases.Count - 1].DisplayText;
-                                    text.Append(bestText);
+                                    runonLength += bestText.Length;
+                                    if ((DateTime.Now - lastDetectionTime >= TimeSpan.FromSeconds(5) || runonLength >= 1800) && runonLength >= 250)
+                                    {
+                                        text.Append("\r\n\r\n    ");
+                                        runonLength = 0;
+                                    }
+                                    text.Append(Regex.Replace(bestText, "(?<=[\\.,?])(?![$ ])", " "));
+                                    lastDetectionTime = DateTime.Now;
                                 }
                             });
                     });
@@ -348,14 +373,14 @@ namespace Transcriber
                         var deviceMetadata = new DeviceMetadata(DeviceType.Near, DeviceFamily.Desktop, NetworkType.Ethernet, OsName.Windows, "1607", "Dell", "T3600");
                         var applicationMetadata = new ApplicationMetadata("TranscriptionApp", "1.0.0");
                         var requestMetadata = new RequestMetadata(Guid.NewGuid(), deviceMetadata, applicationMetadata, "TranscriptionService");
-                        speechClient.RecognizeAsync(new SpeechInput(audio, requestMetadata), this.cts.Token).Wait();
+                        speechClient.RecognizeAsync(new SpeechInput(audio, requestMetadata), mTokensource.Token).Wait();
                         return new Tuple<string, string>(audioFile, text.ToString());
                     }
                 }
             });
         }
         
-        private async Task uploadTranscript(string fileName, string text)
+        private async Task uploadTranscript(string fileName, string text, string user)
         {
             string connectionString = "DefaultEndpointsProtocol=https;AccountName=transcriptions;AccountKey=5Aoic2oWz+n8jUP4tonlzoic9/rapEJPG0jDHHccTLEp2KfnkHusFTS9TWF6mzDBKPixlVQUZ4/QYlQu3wLSpw==;EndpointSuffix=core.windows.net";
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
@@ -377,7 +402,7 @@ namespace Transcriber
             var jobClient = new ServicePartitionClient<WcfCommunicationClient<IStateAggregator>>(
                 wcfClientFactory,
                 new Uri("fabric:/AudioTranscriptionApp/StateAggregator"));
-            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportCompletion(fileName, blockBlob.Uri.AbsoluteUri));
+            await jobClient.InvokeWithRetryAsync(client => client.Channel.ReportCompletion(fileName, blockBlob.Uri.AbsoluteUri, user));
         }
 
     }

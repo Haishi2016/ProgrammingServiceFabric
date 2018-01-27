@@ -29,5 +29,8 @@ namespace StateAggregator.Interfaces
         [DataMember]
         [JsonProperty("message")]
         public string Message { get; set; }
+        [DataMember]
+        [JsonProperty("submitter")]
+        public string Submitter { get; set; }
     }
 }

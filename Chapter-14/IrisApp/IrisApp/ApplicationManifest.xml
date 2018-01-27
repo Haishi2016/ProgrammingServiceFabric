@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest  ApplicationTypeName="IrisAppType" ApplicationTypeVersion="1.0.0"
+                      xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   
+   <ServiceManifestImport>
+      <ServiceManifestRef ServiceManifestName="FrontendPkg" ServiceManifestVersion="1.0.0" />
+      <Policies>
+         <ContainerHostPolicies CodePackageRef="Code">
+            <PortBinding ContainerPort="8081" EndpointRef="ServiceEndpoint" />
+         </ContainerHostPolicies>
+       </Policies>
+   </ServiceManifestImport>
+   <ServiceManifestImport>
+      <ServiceManifestRef ServiceManifestName="BackendPkg" ServiceManifestVersion="1.0.0" />
+      <Policies>
+          <ContainerHostPolicies CodePackageRef="Code">
+             <PortBinding ContainerPort="8082" EndpointRef="ServiceEndpoint" />
+          </ContainerHostPolicies>
+      </Policies>
+   </ServiceManifestImport>   
+   <DefaultServices>
+      <Service Name="Frontend">
+         <StatelessService ServiceTypeName="FrontendType" InstanceCount="1">
+            <SingletonPartition />
+         </StatelessService>
+      </Service>
+      <Service Name="Backend" ServiceDnsName="backend.irisapp">
+         <StatelessService ServiceTypeName="BackendType" InstanceCount="1">
+            <SingletonPartition />
+         </StatelessService>
+      </Service>
+   </DefaultServices>
+   
+</ApplicationManifest>

@@ -4370,6 +4370,14 @@
         "inherits": "2.0.3"
       }
     },
+    "rtcpeerconnection-shim": {
+      "version": "1.2.5",
+      "resolved": "https://registry.npmjs.org/rtcpeerconnection-shim/-/rtcpeerconnection-shim-1.2.5.tgz",
+      "integrity": "sha512-2oLVHZZMk/TsU9JqgrQYwdkOsDOeIalM3STqWjI1LtXrSrInHdig6CysSoTmEublMxnuy/F2i5NXE6tiIh9tZQ==",
+      "requires": {
+        "sdp": "2.5.0"
+      }
+    },
     "rxjs": {
       "version": "5.4.2",
       "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.4.2.tgz",
@@ -4395,6 +4403,11 @@
       "requires": {
         "ajv": "5.2.0"
       }
+    },
+    "sdp": {
+      "version": "2.5.0",
+      "resolved": "https://registry.npmjs.org/sdp/-/sdp-2.5.0.tgz",
+      "integrity": "sha512-4HT7gdxA+AZHl5LDdiLpagFKBS5qAKFYE71CPSNrr+2dCFg9iKXY4JSIhHKZHVnwJAzZ/4jA+z1nam4U+LoYug=="
     },
     "semver": {
       "version": "5.3.0",
@@ -5426,6 +5439,15 @@
           "resolved": "https://registry.npmjs.org/source-list-map/-/source-list-map-2.0.0.tgz",
           "integrity": "sha1-qqR0A/eyRakvvJfqCPJQ1gh+0IU="
         }
+      }
+    },
+    "webrtc-adapter": {
+      "version": "6.1.0",
+      "resolved": "https://registry.npmjs.org/webrtc-adapter/-/webrtc-adapter-6.1.0.tgz",
+      "integrity": "sha512-YEJUFCSO6wukwgjoXWTkKLMZzI06d9tm7qf3SdtNsvyTDk3cUTbv7KyM+iizyl1KzyrJreWzNve5w29pq+Dp/g==",
+      "requires": {
+        "rtcpeerconnection-shim": "1.2.5",
+        "sdp": "2.5.0"
       }
     },
     "whatwg-fetch": {

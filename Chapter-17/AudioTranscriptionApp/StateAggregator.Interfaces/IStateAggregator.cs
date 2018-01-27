@@ -12,9 +12,9 @@ namespace StateAggregator.Interfaces
     public interface IStateAggregator: IService
     {
         [OperationContract]
-        Task ReportProgress(string name, int percent, string message);
+        Task ReportProgress(string name, int percent, string message, string user);
         [OperationContract]
-        Task ReportCompletion(string name, string url);
+        Task ReportCompletion(string name, string url, string user);
         [OperationContract]
         Task<List<JobStatus>> ListJobs();
         [OperationContract]

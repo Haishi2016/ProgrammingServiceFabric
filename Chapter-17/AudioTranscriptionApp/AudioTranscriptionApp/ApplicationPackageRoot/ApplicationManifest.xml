@@ -8,10 +8,27 @@
     <Parameter Name="TranscriberActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="TranscriberActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="TranscriberActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="WordCounterActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="WordCounterActorService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="WordCounterActorService_TargetReplicaSetSize" DefaultValue="1" />
+    <!--<Parameter Name="WordCounterActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="WordCounterActorService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="WordCounterActorService_TargetReplicaSetSize" DefaultValue="1" />-->
   </Parameters>
+  <!--
+  </ServiceManifestImport>-->
+  <!--<Policies>
+      <RunAsPolicy CodePackageRef="Code" UserRef="SetupAdmin" EntryPointType="Setup" />
+    </Policies>-->
+  <!--<ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="WordCounterPkg" ServiceManifestVersion="1.0.0" />
+    -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="StateAggregatorPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
+    <!--<Policies>
+      <RunAsPolicy CodePackageRef="Code" UserRef="SetupAdmin" EntryPointType="Setup" />
+    </Policies>-->
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="TranscriberPkg" ServiceManifestVersion="1.0.0" />
@@ -19,9 +36,9 @@
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WebFrontendPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
-    <Policies>
-      <RunAsPolicy CodePackageRef="Code" UserRef="SetupAdmin" EntryPointType="Setup" />
-    </Policies>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="WordCounterPkg" ServiceManifestVersion="1.0.0" />
   </ServiceManifestImport>
   <DefaultServices>
     <Service Name="StateAggregator">
@@ -39,6 +56,16 @@
         <UniformInt64Partition PartitionCount="[TranscriberActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
+    <Service Name="WordCounterActorService" GeneratedIdRef="e6f2a011-2ac6-4847-a55f-dfb9266e0bb8|None">
+      <StatefulService ServiceTypeName="WordCounterActorServiceType" TargetReplicaSetSize="[WordCounterActorService_TargetReplicaSetSize]" MinReplicaSetSize="[WordCounterActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[WordCounterActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <!--<Service Name="WordCounterActorService" GeneratedIdRef="e6f2a011-2ac6-4847-a55f-dfb9266e0bb8|None">
+      <StatefulService ServiceTypeName="WordCounterActorServiceType" TargetReplicaSetSize="[WordCounterActorService_TargetReplicaSetSize]" MinReplicaSetSize="[WordCounterActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[WordCounterActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>-->
   </DefaultServices>
   <Principals>
     <Users>

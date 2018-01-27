@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest Name="PostgresPkg" Version="1.0.0"
+                 xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+   <ServiceTypes>
+      <StatelessServiceType ServiceTypeName="PostgresType" UseImplicitHost="true">
+   </StatelessServiceType>
+   </ServiceTypes>
+   
+   <CodePackage Name="code" Version="1.0.0">
+      <EntryPoint>
+         <ContainerHost>
+            <ImageName>hbai/sf-postgres</ImageName>
+            <Commands></Commands>
+         </ContainerHost>
+      </EntryPoint>
+      <EnvironmentVariables> 
+         <EnvironmentVariable Name="POSTGRES_USER" Value="user" />
+         <EnvironmentVariable Name="POSTGRES_PASSWORD" Value="password" />
+         <EnvironmentVariable Name="POSTGRES_DB" Value="pet_db" />
+      </EnvironmentVariables> 
+   </CodePackage>
+   <Resources>
+      <Endpoints>
+         <Endpoint Name="ServiceEndpoint" Port="5432" Protocol="tcp" />
+      </Endpoints>
+   </Resources>
+ </ServiceManifest>

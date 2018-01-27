@@ -1,0 +1,25 @@
+<h1>PETS</h1>
+<table id="pets" width="100%" border="1">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Owner</th>
+			<th>Species</th>
+			<th>Sex</th>
+			<th>Birth</th>
+			<th>Death</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{ range $key, $value := .Pets }}
+		<tr>
+			<td>{{ $value.Name }} </td>
+			<td>{{ $value.Owner }} </td>
+			<td>{{ $value.Species }} </td>
+			<td>{{ $value.Sex }} </td>
+			<td>{{ $value.Birth }} </td>
+			<td>{{ $value.Death }} </td>
+		</tr>
+		{{ end }}
+	</tbody>
+</table>

@@ -7,7 +7,7 @@
     <br/>
     <div class="jumbotron">
         <div>
-            <div>Upload a .mp3 or .wav file from your computer:</div>
+            <div>Upload a .mp3, .wav or .m4a file from your computer:</div>
             <input type="file" size="100" (change)="fileChangeEvent($event)" placeholder="Upload audio file..." accept=".wav, .mp3" />
             <br/>
             <!--<button class="btn btn-info" (click)="submitFileJob()" [disabled]="uploading || !hasFile">Upload</button>-->
@@ -33,6 +33,7 @@
                 <th>Transcript</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Submitter</th>
             </tr>
         </thead>
         <tbody>
@@ -45,6 +46,7 @@
                 </td>
                 <td><b>{{ job.date | date:'medium' }}</b></td>
                 <td><b *ngIf="job.endDate > job.date">{{ job.endDate | date:'medium' }}</b></td>                
+                <td>{{ job.submitter }}</td>
             </tr>
         </tbody>
     </table>
