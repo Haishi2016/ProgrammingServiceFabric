@@ -268,7 +268,7 @@ namespace Transcriber
         private  Task<List<string>> splitFiles(string file)
         {
             List<string> outputFiles = new List<string>();
-            int chunkSizeinSeconds = 600;
+            int chunkSizeinSeconds = 6000;
             int overlapInSeconds = 5;
             string outputFilePattern = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)) + "{0}.wav";
             using (WaveFileReader reader = new WaveFileReader(file))
@@ -328,8 +328,8 @@ namespace Transcriber
         {
             return Task.Factory.StartNew<Tuple<string,string>>(() =>
             {
-                var preferences = new Preferences("en-US", new Uri("wss://speech.platform.bing.com/api/service/recognition/continuous"), new CognitiveServicesAuthorizationProvider("68ecbfed77384b0badae81995a5b256b"));
-                //var preferences = new Preferences("en-US", new Uri("wss://5ba5d066af03405ba71e84ba3bc4d185.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
+                //var preferences = new Preferences("en-US", new Uri("wss://speech.platform.bing.com/api/service/recognition/continuous"), new CognitiveServicesAuthorizationProvider("68ecbfed77384b0badae81995a5b256b"));
+                var preferences = new Preferences("en-US", new Uri("wss://5ba5d066af03405ba71e84ba3bc4d185.api.cris.ai/ws/cris/speech/recognize/continuous"), new CognitiveServicesAuthorizationProvider("36677b4f10da4d2a946af66da757ef0b"));
                 DateTime lastReportTime = DateTime.Now;
                 DateTime lastDetectionTime = DateTime.Now;
                 int runonLength = 0;

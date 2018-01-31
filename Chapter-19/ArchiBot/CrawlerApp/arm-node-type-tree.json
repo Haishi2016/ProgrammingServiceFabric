@@ -1,0 +1,169 @@
+﻿{
+  "types": [
+    {
+      "name": "Container Orchestrator",
+      "id": "ArchiBot/ContainerOrchestrator",
+      "types": [
+        {
+          "name": "Azure Container Service",
+          "id": "Microsoft.ContainerService/containerServices",
+          "options": [
+            {
+              "name": "Orchestrator Type",
+              "values": [
+                "Kubernetes",
+                "DCOS",
+                "Swarm"
+              ]
+            }
+          ],
+          "features": {
+            "horizontal-scale": 100,
+            "hosts": [
+              {
+                "name": "Docker Container",
+                "id": "ArchiBot/Service/Docker"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Storage",
+      "id": "ArchiBot/Storage",
+      "types": [
+        {
+          "name": "NoSQL",
+          "id": "ArchiBot/Storage/NoSQL",
+          "types": [
+            {
+              "name": "Azure Storage",
+              "id": "Microsoft.Storage/storageAccounts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public IP Address",
+      "id": "Microsoft.Network/publicIPAddresses",
+      "features": {
+        "entry-point": true
+      }
+    },
+    {
+      "name": "Load Balancer",
+      "id": "Microsoft.Network/loadBalancers",
+      "features": {
+        "proxy": true
+      }
+    },
+    {
+      "name": "VM Scale Set",
+      "id": "Microsoft.Compute/virtualMachineScaleSets",
+      "features": {
+        "horizontal-scale": 1000,
+        "hosts": [
+          {
+            "name": "any"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Virtual Network",
+      "id": "Microsoft.Network/virtualNetworks"
+    },
+    {
+      "name": "Network Interface",
+      "id": "Microsoft.Network/networkInterfaces"
+    },
+    {
+      "name": "Virtual Machine",
+      "id": "Microsoft.Compute/virtualMachines",
+      "options": [
+        {
+          "name": "OS Profile",
+          "values": [
+            "Linux",
+            "Windows"
+          ]
+        },
+        {
+          "name": "Winodws OS Version",
+          "values": [
+            "2012 R2",
+            "2016"
+          ],
+          "constraints": [
+            {
+              "type": "option-constraint",
+              "name": "OS Profile",
+              "value": "Winodws"
+            }
+          ]
+        }
+      ],
+      "features": {
+        "hosts": [
+          {
+            "name": "any"
+          },
+          {
+            "name": "Docker Container",
+            "id": "ArchiBot/Service/Docker",
+            "constraints": [
+              {
+                "type": "option-constraint",
+                "name": "OS Profile",
+                "value": "Linux"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Certificate Order",
+      "id": "Microsoft.CertificateRegistration/certificateOrders"
+    },
+    {
+      "name": "Domain Ownership Identifier",
+      "id": "Microsoft.Web/sites/domainOwnershipIdentifiers"
+    },
+    {
+      "name": "Certificate",
+      "id": "Microsoft.CertificateRegistration/certificateOrders/certificates"
+    },
+    {
+      "name": "Web Certificate",
+      "id": "Microsoft.Web/certificates"
+    },
+    {
+      "name": "Web Site",
+      "id": "Microsoft.Web/sites",
+      "features": {
+        "hosts": [
+          {
+            "name": "ASP.NET",
+            "id": "ArchiBot/Service/ASP.NET"
+          }]
+      }
+    },
+    {
+      "name": "Service",
+      "id": "ArchiBot/Service",
+      "types": [
+        {
+          "name": "ASP.NET",
+          "id": "ArchiBot/Service/ASP.NET"
+        },
+        {
+          "name": "Docker Container",
+          "id": "ArchiBot/Service/Docker"
+        }
+      ]
+    }
+  ]
+}

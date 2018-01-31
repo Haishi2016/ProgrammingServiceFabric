@@ -1,0 +1,449 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<script src="https://unpkg.com/botframework-webchat/botchat.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<style>
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+        fill: none;
+    }
+
+    .link {
+        fill: none;
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    .labels text {
+        pointer-events: none;
+        font: 10px sans-serif;
+    }
+    .link-labels text {
+        pointer-events: none;
+        font: 10px sans-serif;
+    }      
+</style>
+
+
+<div class="row" style="display:table-row">
+    <div class="col-md-3"> <!--left panel-->
+        <div id="bot" style="height:818px;"></div>
+    </div>
+    <div class="col-md-6"> <!--middle panel-->
+        <svg width="960" height="800" id="archiGraph"></svg>
+    </div>
+    <div class="col-md-3 option-div">
+        <!--right panel-->
+        <h4 id="detailsTitle" class="option-title" style="display:none;">Details</h4>
+        <div id="detailsPanel" class="option-panel">
+            <div id="webhost" class="option-tab" style="display:none;">
+                <table>
+                    <tr>
+                        <td><img src="images/webapp.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateHostOption('Web App', 'webapp.png')">Web App</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/sf.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateHostOption('Service Fabric', 'sf.png')">Service Fabric</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/vmss.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateHostOption('Virtual Machine Scale Set', 'vmss.png')">Virtual Machine Scale Set</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/ufo.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateHostOption('Multiple Hosting Options','ufo.png')">Decide Later</a></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="db" class="option-tab" style="display:none;">
+                <table>
+                    <tr>
+                        <td><img src="images/cache.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateDBOption('Redis Cache', 'cache.png')">Redis Cache</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/docdb.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateDBOption('Document DB', 'docdb.png')">Document DB</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/mysql.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateDBOption('MySQL', 'mysql.png')">MySQL</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/sqlserver.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateDBOption('SQL Database', 'sqlserver.png')">SQL Database</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/table.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateDBOption('Table Storage', 'table.png')">Table Storage</a></td>
+                    </tr>
+                    <tr>
+                        <td><img src="images/ufo.png" class="service-icon" /></td>
+                        <td><a href="#" onclick="updateDBOption('Multiple DB Optons', 'ufo.png')">Decide Later</a></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="arm" class="option-tab" style="display:none;">
+                <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fazure-quickstart-templates%2Fmaster%2F201-traffic-manager-webapp%2Fazuredeploy.json" target="_blank">
+                    <img src="http://azuredeploy.net/deploybutton.png"  style="padding:8px;"/>
+                </a>
+                <a class="button button-little button-secondary" href="~/arm/TrafficManagerWebApp.zip">
+                    <img src="~/images/download.png"  style="padding:5px;"/>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var botConnection = new BotChat.DirectLine({
+        secret: 'NQRtMGbgaWc.cwA.dfs.R84CC5N7Mh__9_UML29-99w6VIEx1uEO8zmZlIpWqp8',
+        webSocket: true
+    });
+
+    BotChat.App({
+        botConnection,
+        user: { id: 'Haishi Bai' },
+        bot: { id: 'MS-ArchiBot' },
+        resize: 'detect'
+    }, document.getElementById("bot"));
+
+    botConnection.activity$
+        .filter(activity => activity.type == "message")
+        .subscribe(activity => handleActivity(activity));
+
+    const handleActivity = (activity) => {
+        if (activity.text.startsWith("Okay")) {
+            index = 1;
+            updateDiagram(index);
+        }
+        else if (activity.text.startsWith("Great")) {
+            index = 2;
+            updateDiagram(index);
+        }
+        else if (activity.text.startsWith("I've")) {
+            index = 3;
+            updateDiagram(index);
+        }
+        else if (activity.text.startsWith("Awesome!")) {
+            showARMOptions();
+        }
+    }
+</script>
+<script>
+    var index = 1, link, node, linkText, simulation, graph, nodeGroup, linkGroup, linkTextGroup;
+    var dboption = { "label": "Multiple DB Optons", "icon": "ufo.png" };
+    var hostoption = { "label": "Multiple Hosting Options", "icon": "ufo.png" };
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    function updateDBOption(label, icon) {
+        dboption.label = label;
+        dboption.icon = icon;
+
+        d3.selectAll("image")
+            .filter(function (d) { return d && (d.id == "Database" || d.id == "Database2"); })
+            .attr("xlink:href", "images/" + icon);
+    }
+
+    function updateHostOption(label, icon) {
+        hostoption.label = label;
+        hostoption.icon = icon;
+
+        d3.selectAll("image")
+            .filter(function (d) { return d && (d.id == "WebHost" || d.id == "WebHost2"); })
+            .attr("xlink:href", "images/" + icon);
+    }
+
+    function clearDiagram()
+    {
+        hideOptions();   
+        if (graph) {
+            d3.selectAll("svg > *").remove();
+            graph.links = [];
+            graph.nodes = [];
+            simulation.nodes(graph.nodes);
+            simulation.force("link").links(graph.links);
+        }
+    }
+
+    function updateDiagram(index) {
+
+        // d3.json("http://localhost:8081/api/graphs/1", function (error, graph) {
+        //if (error) throw error;
+
+        var svg = d3.select("#archiGraph"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+
+
+        simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().distance(200).strength(0.5).id(function (d) { return d.id; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        svg.append("defs").selectAll("marker")
+            .data(["depends"]) //create multiple elements for different dependency types
+            .enter().append("marker")
+            .attr("id", function (d) { return d; })
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 60)
+            .attr("refY", -8)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+        if (!linkGroup) {
+            linkGroup = svg.append("g")
+                .attr("class", "links");
+        }
+        if (!nodeGroup) {
+            nodeGroup = svg.append("g")
+                .attr("class", "nodes");
+        }
+        if (!linkTextGroup) {
+            linkTextGroup = svg.append("g");
+        }
+        if (index == 1) {
+            if (graph)
+                clearDiagram();
+            graph = {
+                "nodes": [{ "id": "WebApp", "label": "Web App", "group": 0, "icon": "webapp.png" },
+                { "id": "WebHost", "label": hostoption.label, "group": 3, "icon": hostoption.icon }],
+                "links": [{ "source": "WebApp", "target": "WebHost", "value": 1, "label": "is hosted on" }]
+            };
+        } else if (index == 2) {
+            graph.nodes.push({ "id": "Database", "label": dboption.label, "group": 2, "icon": dboption.icon });
+            graph.links = [
+                { "source": "WebApp", "target": "WebHost", "value": 1, "label": "is hosted on" },
+                { "source": "WebApp", "target": "Database", "value": 1, "label": "depends on" }];
+        } else if (index == 3) {
+            graph.nodes.push({ "id": "WebApp2", "label": "Web App", "group": 0, "icon": "webapp.png" });
+            graph.nodes.push({ "id": "WebHost2", "label": hostoption.label, "group": 3, "icon": hostoption.icon });
+            graph.nodes.push({ "id": "Database2", "label": dboption.label, "group": 2, "icon": dboption.icon });
+            graph.nodes.push({ "id": "TrafficManager", "label": "Traffic Manager", "group": 4, "icon": "trafficmanager.png" });
+            graph.links = [{ "source": "WebApp", "target": "WebHost", "value": 1, "label": "is hosted on" },
+            { "source": "WebApp", "target": "Database", "value": 1, "label": "depends on" },
+            { "source": "WebApp2", "target": "WebHost2", "value": 1, "label": "is hosted on" },
+            { "source": "WebApp2", "target": "Database2", "value": 1, "label": "depends on" },
+            { "source": "TrafficManager", "target": "WebHost", "value": 1, "label": "depends on" },
+            { "source": "TrafficManager", "target": "WebHost2", "value": 1, "label": "depends on" }];
+        }
+
+        d3.selectAll(".link").remove();
+        d3.selectAll(".link-labels").remove();
+
+        link = linkGroup.selectAll("g")
+            .data(graph.links);
+        var linkEnter = link.enter().append("path")
+            .attr("class", "link")
+            .attr("marker-end", function (d) { return "url(#depends)"; });
+        link = linkEnter.merge(link);
+        link.exit().remove();
+
+        node = nodeGroup.selectAll("g").data(graph.nodes);
+        var nodeEnter = node.enter().append("g")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        nodeEnter.append("circle")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .attr("r", 50)
+            .attr("fill", function (d) { return color(d.group); });
+
+        nodeEnter.append("svg:image")
+            .attr("xlink:href", function (d) { return "images/" + d.icon; })
+            .attr("x", "-32px")
+            .attr("y", "-32px")
+            .attr("width", "64px")
+            .attr("height", "64px");
+
+        nodeEnter.append("title")
+            .text(function (d) { return d.label; });
+
+        nodeEnter.on("click", nodeClick);
+
+        node = nodeEnter.merge(node);
+        node.exit().remove();
+
+        linkText = linkTextGroup.selectAll("g")
+            .data(graph.links);
+        var linkTextEnter = linkText.enter()
+            .append("text")
+            .attr("class", "link-labels")
+            .attr("text-anchor", "middle")
+            .text(function (d) { return d.label; });
+        linkText = linkTextEnter.merge(linkText);
+        linkText.exit().remove();
+
+        simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+        simulation.force("link").links(graph.links);
+
+        return;
+        link = linkGroup
+            .selectAll("g")
+            .data(graph.links)
+            .enter().append("path")
+            //.attr("stroke-width", function (d) { return Math.sqrt(d.value); })
+            .attr("class", "link")
+            .attr("marker-end", function (d) { return "url(#depends)"; });
+
+        linkText = svg.append("g")
+            .selectAll("text")
+            .data(graph.links)
+            .enter().append("text")
+            .attr("class", "link-labels")
+            .attr("text-anchor", "middle")
+            .text(function (d) { return d.label; });
+
+        node = nodeGroup
+            .selectAll("g")
+            .data(graph.nodes)
+            .enter()
+            .append("g")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("circle")
+            .attr("r", 50)
+            .attr("fill", function (d) { return color(d.group); })
+
+        node.append("svg:image")
+            .attr("xlink:href", function (d) { return "images/" + d.icon; })
+            .attr("x", "-32px")
+            .attr("y", "-32px")
+            .attr("width", "64px")
+            .attr("height", "64px");
+
+        //node.append("text")
+        //    .text(function (d) { return d.label; })
+        //    .attr("text-anchor", "middle")
+        //    .call(wrap, 80);
+
+        node.append("title")
+            .text(function (d) { return d.label; });
+
+        node.on("click", nodeClick);
+
+        simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(graph.links);
+
+        // });
+    }
+
+    function ticked() {
+        link
+            .attr("d", linkArc);
+        node
+            .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
+        linkText
+            .attr("transform", function (d) { return "translate(" + (d.source.x + d.target.x) / 2 + "," + (d.source.y + d.target.y) / 2 + ")"; });
+    }
+    function linkArc(d) {
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y,
+            dr = Math.sqrt(dx * dx + dy * dy);
+        return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    }
+    function showHostOptions() {
+        $('#detailsTitle').text('Host Options');
+        $('#detailsTitle').show();
+        $('#webhost').slideDown();
+        $('#db').slideUp();
+        $('#arm').slideUp();
+    }
+    function showDBOptions() {
+        $('#detailsTitle').text('DB Options');
+        $('#detailsTitle').show();
+        $('#webhost').slideUp();
+        $('#db').slideDown();
+        $('#arm').slideUp();
+    }
+    function showARMOptions() {
+        $('#detailsTitle').text('ARM Template');
+        $('#detailsTitle').show();
+        $('#webhost').slideUp();
+        $('#db').slideUp();
+        $('#arm').slideDown();
+    }
+    function hideOptions() {
+        $('#detailsTitle').hide();
+        $('#webhost').slideUp();
+        $('#db').slideUp();
+        $('#arm').slideUp();
+    }
+
+    function nodeClick() {
+        var text = d3.select(this).select("title").text();
+        if (text == "Multiple Hosting Options" || text == "Web App" || text == "Service Fabric" || text == "Virtual Machine Scale Set")
+            showHostOptions();
+        else if (text == "Multiple DB Optons" || text == "Redis Cache" || text == "Document DB" || text == "MySQL" || text == "SQL Database" || text == "Table Storage")
+            showDBOptions();
+        else
+            hideOptions();
+    }
+    function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+
+    function wrap(text, width) {
+        text.each(function () {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 28,
+                y = text.attr("y"),
+                dy = -10,
+                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "px");
+            while (word = words.pop()) {
+                if (word != "") {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineHeight + dy + "px").text(word);
+                    }
+                }
+            }
+        });
+    }
+</script>
