@@ -1,0 +1,10 @@
+{
+  "name": "hello-world",
+  "version": "1.0",
+  "description": "A Node.js Hello World App",
+  "author": "Haishi Bai<hbai@microsoft.com>",
+  "dependencies": {
+    "express": "*",
+    "os": "*"
+  }
+}
