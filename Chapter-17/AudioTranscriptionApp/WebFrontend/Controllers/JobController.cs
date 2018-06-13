@@ -52,7 +52,7 @@ namespace WebFrontend.Controllers
         {
             //var configPackage = this.Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             //string connectionString = configPackage.Settings.Sections["JobManagerConfig"].Parameters["StorageConnectionString"].Value;
-            string connectionString = "DefaultEndpointsProtocol=https;AccountName=transcriptions;AccountKey=5Aoic2oWz+n8jUP4tonlzoic9/rapEJPG0jDHHccTLEp2KfnkHusFTS9TWF6mzDBKPixlVQUZ4/QYlQu3wLSpw==;EndpointSuffix=core.windows.net";
+            string connectionString = "[Storage Account Connection String]";
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer container = blobClient.GetContainerReference("clips");
