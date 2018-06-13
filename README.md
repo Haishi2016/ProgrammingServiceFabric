@@ -27,7 +27,7 @@ Source code for the Programming Microsoft Azure Service Fabric book
 * [**ConsoleRedirectTestApplication**](./Chapter-5/ConsoleRedirectTestApplication) A guest executable (script) host example with console redirection.
 * [**HelloWorldWithData**](./Chapter-5/HelloWorldWithData) A Hello, World! stateful service.
 * [**NodeJsHelloWorldApplication**](./Chapter-5/NodeJsHelloWorldApplication) A Hello, World! Node.js service.
-* [**ResoruceGovernance**](./Chapter-5/ResoruceGovernance) A resource goverance policy demostration.
+* [**ResourceGovernance**](./Chapter-5/ResourceGovernance) A resource goverance policy demostration.
 * [**UpgradeProcess**](./Chapter-5/UpgradeProcess) The test application used in upgrade experiments.
 
 ### Chapter 6
@@ -62,7 +62,7 @@ Source code for the Programming Microsoft Azure Service Fabric book
 * [**ActorApplication**](./Chapter-12/ActorApplication) A sample Actor application in Java.
 * [**CalculatorApplication**](./Chapter-12/CalculatorApplication) A sample calculator service written in Java.
 * [**GuestPythonApplication**](./Chapter-12/GuestPythonApplication) A sample guest host application on Linux that hosts a Python [Flask](http://flask.pocoo.org/) web server.
-* [**HelloWorldLInux**](./Chapter-12/HelloWorldLInux) A Hello, World! application on Linux.
+* [**HelloWorldLInux**](./Chapter-12/HelloWorldLinux) A Hello, World! application on Linux.
 * [**StatefulApplication**](./Chapter-12/StatefulApplication) A stateful service written in Java.
 
 ### Chapter 13
@@ -105,3 +105,10 @@ Source code for the Programming Microsoft Azure Service Fabric book
 
 [V1-Samples](./V1-Samples) contains projects from the version 1 book that are not brought forward to version 2 (contributed by @alessandro-avila)
 
+## Reader Corrections
+
+Spot a mistake? Please contribute a correction. See instructions [here](./Corrections/ReaderCorrections.md).
+
+## Missing Chapters
+
+Coming Late 2018 
