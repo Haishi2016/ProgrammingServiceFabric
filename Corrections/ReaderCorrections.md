@@ -3,6 +3,10 @@ Spot a mistake in the book? Please submit a pull request to contribute a correct
 
 * Please update/create the corrections.md file under the corresponding chapter folder, named as ./Corrections/Chapter-[Chapter number].
 * Please use the following format.
+* If you want to contribute a fix to the sample code, please update the code folder and submit a pull request.
+
+
+THANK YOU!
 
 ====
 
@@ -10,11 +14,11 @@ Spot a mistake in the book? Please submit a pull request to contribute a correct
 
 ### Mistake: 
 
-Description of the mistake with quotes from the original text/code if necessary.
+Description of the mistake with quotes from the original text if necessary.
 
 ### Correction: 
 
-How do you suggest the text/code should be corrected.
+How do you suggest the text should be corrected.
 
 ====
 

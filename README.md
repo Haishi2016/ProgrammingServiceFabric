@@ -62,7 +62,7 @@ Source code for the Programming Microsoft Azure Service Fabric book
 * [**ActorApplication**](./Chapter-12/ActorApplication) A sample Actor application in Java.
 * [**CalculatorApplication**](./Chapter-12/CalculatorApplication) A sample calculator service written in Java.
 * [**GuestPythonApplication**](./Chapter-12/GuestPythonApplication) A sample guest host application on Linux that hosts a Python [Flask](http://flask.pocoo.org/) web server.
-* [**HelloWorldLInux**](./Chapter-12/HelloWorldLinux) A Hello, World! application on Linux.
+* [**HelloWorldLinux**](./Chapter-12/HelloWorldLinux) A Hello, World! application on Linux.
 * [**StatefulApplication**](./Chapter-12/StatefulApplication) A stateful service written in Java.
 
 ### Chapter 13
