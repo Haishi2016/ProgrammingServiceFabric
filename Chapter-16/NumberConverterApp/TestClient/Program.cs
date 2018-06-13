@@ -20,7 +20,7 @@ namespace TestClient
         }
         static void SendMessages()
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder("Endpoint=sb://number-converter.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=qN6Kac7d7dJ7H+mTzjxEKR4LiWENzY90Yc64ZnFzPXA=")
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder("[Event Hub Connection String]")
             {
                 EntityPath = "number-ingress"
             };
@@ -45,7 +45,7 @@ namespace TestClient
         }
         static void ReceiveMessages(string partitionId)
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder("Endpoint=sb://number-converter.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=qN6Kac7d7dJ7H+mTzjxEKR4LiWENzY90Yc64ZnFzPXA=")
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder("[Event Hub Connection String]")
             {
                 EntityPath = "number-egress"
             };
