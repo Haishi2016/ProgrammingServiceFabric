@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.ServiceFabric.AspNetCore.WebListener" Version="2.6.220" />
     <PackageReference Include="Microsoft.ServiceFabric.Data" Version="2.6.220" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="2.6.220" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
